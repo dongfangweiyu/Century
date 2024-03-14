@@ -1,0 +1,5 @@
+# Project exclude paths
+/common/target/
+/dao/target/
+*.iml
+.idea
