@@ -1,0 +1,84 @@
+<div th:replace="commons/header::html" ></div>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                <legend th:if="${_method eq 'POST'}">审核商户</legend>
+            </fieldset>
+
+        </div>
+        <div class="layui-card-body">
+            <form th:method="${_method }" class="layui-form">
+                <input type="hidden" name="_method" th:value="${_method}"/>
+                <input type="hidden" name="id" th:value="${bean.id}"/>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">商户账号</label>
+                    <div class="layui-input-inline">
+                        <input th:disabled="disabled" name="account" th:value="${bean.account}" class="layui-input"  required  style="width: 300px;"/>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">代理账号</label>
+                    <div class="layui-input-inline">
+                        <input th:disabled="disabled" name="proxyAccount" th:value="${proxyUser.account}" class="layui-input"  required  style="width: 300px;"/>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">配置费率</label>
+                    <div class="layui-input-block">
+                        <table class="layui-table">
+                            <thead>
+                                <tr>
+                                    <th>支付通道</th>
+                                    <th>代理费率</th>
+                                    <th>商户费率</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="item,stat:${rateList}" >
+                                    <td>
+                                        <input type="hidden" th:name="${'rateVoList['+stat.index+'].payChannelId'}" th:value="${item.payChannelId}" class="layui-input" />
+                                        <input th:disabled="disabled" type="checkbox" th:name="${'rateVoList['+stat.index+'].checkedBox'}" lay-skin="primary" th:title="${item.payChannelName}" th:checked="${item.checkedBox}" />
+                                        <input type="hidden" th:name="${'rateVoList['+stat.index+'].payChannelName'}" th:value="${item.payChannelName}" readonly  class="layui-input"/>
+                                    </td>
+                                    <td><input th:disabled="disabled" type="number" th:name="${'rateVoList['+stat.index+'].proxyRate'}"  min="0" max="100" step="0.01"  th:value="${item.proxyRate}" class="layui-input"/>
+                                    </td>
+                                    <td><input  th:disabled="disabled" type="number" th:name="${'rateVoList['+stat.index+'].MerchantRate'}"  min="0" max="100" step="0.01"  th:value="${item.MerchantRate}" class="layui-input"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <a th:if="${merchantInfo.applyStatus == 'INAUDIT'}" th:href="@{'/private/openManager/applyPass?id=' + ${bean.id}}"
+                           class="layui-btn layui-btn-radius layui-btn-primary">通过</a>
+                        <a th:if="${merchantInfo.applyStatus == 'INAUDIT'}" th:href="@{'/private/openManager/applyNotPass?id=' + ${bean.id}}"
+                           class="layui-btn layui-btn-radius layui-btn-primary">不通过</a>
+                        <button type="button" onclick="location.href='/private/openManager/findListOpenManager'"
+                                class="layui-btn layui-btn-radius layui-btn-primary">取消
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    layui.use(['layer','form','transfer'], function () {
+        var layer = layui.layer;
+        var form=layui.form;
+        var $=layui.$;
+        var transfer=layui.transfer;
+    });
+
+</script>
+</body>
+<div th:replace="commons/footer" ></div>

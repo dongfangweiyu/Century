@@ -1,0 +1,205 @@
+<div th:replace="commons/header::html" ></div>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <form id="totalForm" class="layui-form layui-form-pane" th:action="@{/private/merchantBehalfOrder/findListBehalfOrder}"
+                  th:method="GET">
+                <input type="hidden" id="size" th:value="${pager.size}" name="size">
+                <input type="hidden" id="page" th:value="${pager.page}" name="page">
+                <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                    <legend>条件筛选</legend>
+                </fieldset>
+                <div class="layui-row layui-col-space15">
+                    <div class="layui-col-md3">
+                        <div class="layui-card">
+                            <div class="layui-card-body">总代付金额</div>
+                            <div class="layui-card-header">
+                                <span style="font-size: 30px;font-weight: bold;" th:text="${merchantOrderTotal.behalfOrderMoneyTotal}"></span>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="layui-col-md3">
+                        <div class="layui-card">
+                            <div class="layui-card-body">总成功金额</div>
+                            <div class="layui-card-header">
+                                <span style="font-size: 30px;font-weight: bold;" th:text="${merchantOrderTotal.behalfOrderSuccessTotal}"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md3">
+                        <div class="layui-card">
+                            <div class="layui-card-body">总笔数</div>
+                            <div class="layui-card-header">
+                                <span style="font-size: 30px;font-weight: bold;" th:text="${merchantOrderTotal.totalBehalfOrderCount}"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md3">
+                        <div class="layui-card">
+                            <div class="layui-card-body">总成功笔数</div>
+                            <div class="layui-card-header">
+                                <span style="font-size: 30px;font-weight: bold;" th:text="${merchantOrderTotal.behalfOrderSuccessCount}"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">日期</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="beginTime" name="beginTime"
+                                   th:value="${behalfOrderReq.beginTime}"
+                                   placeholder="起始时间" autocomplete="off" class="layui-input" />
+                        </div>
+                        <div class="layui-form-mid">-</div>
+                        <div class="layui-input-inline">
+                            <input type="text" id="endTime" name="endTime"
+                                   th:value="${behalfOrderReq.endTime}"
+                                   placeholder="结束时间" autocomplete="off" class="layui-input" />
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <label class="layui-form-label">状态</label>
+                        <div class="layui-input-inline">
+                            <select name="status" id="status">
+                                <option value="">全部</option>
+                                <option value="PROCESS" th:selected="${behalfOrderReq.status == 'PROCESS'}">处理中</option>
+                                <option value="SUCCESS" th:selected="${behalfOrderReq.status == 'SUCCESS'}">成功</option>
+                                <option value="FAIL" th:selected="${behalfOrderReq.status == 'FAIL'}">失败</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">商户订单号</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="outOrderNo" placeholder="请输入商户订单号查询" th:value="${behalfOrderReq.outOrderNo}"
+                                   autocomplete="off" class="layui-input"/></div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">收款卡号</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="merchantBankNo" placeholder="请输入收款银行卡号查询" th:value="${behalfOrderReq.merchantBankNo}"
+                                   autocomplete="off" class="layui-input"/></div>
+                    </div>
+                    <div class="layui-inline">
+                        <input type="submit"  lay-submit  lay-filter="submitBtn" value="搜索" class="layui-btn" />
+                    </div>
+                    <div class="layui-inline">
+                        <a href="javascript:excel();"  style="width:100px;"
+                           class="layui-btn layui-btn-danger">导出订单</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="layui-card-body">
+            <table class="layui-table">
+                <thead>
+                <tr>
+                    <th>订单号</th>
+                    <th>收款信息</th>
+                    <th>提现金额</th>
+                    <th>提现时间</th>
+                    <th>回调时间</th>
+                    <th>成功时间</th>
+                    <th>结束时间</th>
+                    <th>转账凭证</th>
+                    <th style="width: 50px;">状态</th>
+                    <th>备注</th>
+                </tr>
+                </thead>
+                <tbody id="content">
+                <tr id="app-tr-${item.id}" th:each="item : ${listByCondition.content}">
+                    <!--<td th:text="${item.id}"></td>-->
+                    <td th:text="${item.outOrderNo}"></td>
+                    <td th:text="${item.bankCardInfo}"></td>
+                    <td th:text="${item.amount}"></td>
+                    <td th:text="${#dates.format(item.createTime, 'yyyy-MM-dd HH:mm')}"></td>
+                    <td th:text="${#dates.format(item.completeTime, 'yyyy-MM-dd HH:mm')}"></td>
+                    <td th:text="${#dates.format(item.successTime, 'yyyy-MM-dd HH:mm')}"></td>
+                    <td th:text="${#dates.format(item.closeTime, 'yyyy-MM-dd HH:mm')}"></td>
+                    <td th:if="${item.paymentVoucher !=null}" ><a target="_blank" class="layui-btn layui-btn-warm layui-btn-xs feijin-modify" th:href="${payUrl+item.paymentVoucher}">点击查看</a></td>
+                    <td th:if="${item.paymentVoucher ==null}">暂无凭证</td>
+                    <td th:switch="${item.status != null}">
+                        <span th:case="${item.status == 'PROCESS'}">待处理</span>
+                        <span style="color: green;" th:case="${item.status == 'SUCCESS'}">成功</span>
+                        <span style="color: red;" th:case="${item.status == 'FAIL'}">失败</span>
+                    </td>
+                    <td th:text="${item.remark}"></td>
+                </tr>
+                </tbody>
+                <tfoot >
+
+                </tfoot>
+            </table>
+            <div id="footer_page"></div>
+        </div>
+    </div>
+</div>
+<script th:inline="javascript">
+    var $;
+    layui.use(['form', 'layedit', 'laydate', 'laypage','layer','upload'], function () {
+        var layer=layui.layer;
+        var laydate = layui.laydate;
+        var laypage = layui.laypage;
+        var form = layui.form;
+        var upload = layui.upload;
+        $=layui.$;
+        laydate.render({
+            elem: '#beginTime'
+            ,type: 'datetime'
+        });
+        laydate.render({
+            elem: '#endTime'
+            ,type: 'datetime'
+        });
+        laypage.render({
+            elem: 'footer_page',
+            count: [[${listByCondition.getTotalElements()}]],
+            limit: 20,
+            layout: ['count', 'prev', 'page', 'next', 'skip'],
+            curr: [[${pager.page}]],
+            jump: function(obj, first){
+                if (!first) {
+                    $("#page").val(obj.curr);
+                    $("#size").val(obj.limit);
+                    $("#totalForm").submit();
+                }
+            }
+        });
+
+        //监听提交
+        form.on('submit(submitBtn)', function(data){
+            $("#page").val(1);
+            $("#totalForm").submit();
+        });
+
+    });
+    function excel(){
+        var beginTime=$("#beginTime").val();
+        var endTime=$("#endTime").val();
+        var status=$("#status").val();
+        if(beginTime==undefined||beginTime.length<=0||endTime==undefined||endTime.length<=0){
+            layer.alert("请选择时间段,再点击导出");
+            return;
+        }
+
+        var date1 = new Date(beginTime.replace(/-/g,"/"));
+        var date2 = new Date(endTime.replace(/-/g,"/"));
+        if(date2.getTime()<date1.getTime()){
+            layer.alert("开始时间不能大于结束时间");
+            return false;
+        }
+        var day = parseInt(((date2.getTime()-date1.getTime())/1000)/(24*60*60));
+        if(day>1){
+            layer.alert("导出数据查询时间不能超过1天");
+            return false;
+        }
+        window.location.href='/private/merchantBehalfOrder/excel?beginTime='+beginTime+"&endTime="+endTime+"&status="+status;
+    }
+</script>
+
+</body>
+<div th:replace="commons/footer" ></div>

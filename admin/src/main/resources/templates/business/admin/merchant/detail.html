@@ -1,0 +1,112 @@
+<div th:replace="commons/header::html" ></div>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                <legend>基本信息</legend>
+
+                <div class="layui-col-md1" style="float: right ">
+                    <a href="javascript:history.back(-1)"  class="layui-btn layui-btn-sm">
+                        <i class="layui-icon">&#xe61f;</i> 返回
+                    </a>
+                </div>
+            </fieldset>
+
+        </div>
+        <div class="layui-card-body">
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-col-md4">
+                            <div class="layui-card">
+                                <div class="layui-card-header">
+                                    <span th:text="'商户账户：' + ${merchantDetailVo.merchantAccount}"></span>
+                                </div>
+                                <div class="layui-card-header">
+                                    <span th:text="'商户编号：' + ${merchantDetailVo.appId}" style="font-weight: bold;font-size: 17px;"></span>
+                                </div>
+                                <div class="layui-card-header">
+                                    <span th:text="'商户名称：' + ${merchantDetailVo.companyName}"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-col-md4">
+                            <div class="layui-card">
+                                <div class="layui-card-header">
+                                    <span th:text="'业务员账号：' + ${merchantDetailVo.proxyAccount}"></span>
+                                </div>
+                                <div class="layui-card-header">
+                                    <span th:text="'注册时间：' + ${#dates.format(merchantDetailVo.createTime, 'yyyy-MM-dd HH:mm')}"></span>
+                                </div>
+                                <div class="layui-card-header">
+                                    <span th:text="'账户状态：' + ${merchantDetailVo.status== 0 ? '正常' : '禁用'}"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-header">
+                            <span th:text="'商户秘钥：' + ${merchantDetailVo.secret}" style="font-weight: bold;font-size: 17px;"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+        <legend>用户资产</legend>
+    </fieldset>
+    <div style="padding: 20px; background-color: #F2F2F2;">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-col-md4">
+                        <div class="layui-card">
+                            <div class="layui-card-header">
+                                <span th:text="'账户总额：' + ${merchantDetailVo.walletMoney}">
+                                </span>
+                                <a  th:data="${merchantDetailVo.merchantUserId}" class="layui-btn layui-btn-sm updateMoney" style="margin-left: 70px;">
+                                    <i class="layui-icon">&#xe65e;</i> 编辑</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    var $;
+    layui.use(['layer','form','transfer','element'], function () {
+        var layer = layui.layer;
+        var form=layui.form;
+        var $=layui.$;
+        var element=layui.element;
+
+        $(function () {
+            //编辑余额
+            $(".updateMoney").click(function () {
+                var id = $(this).attr("data");
+                layer.open({
+                    type: 2,
+                    title: '正数为加，负数为减',
+                    content: '/private/merchant/updateMoney?userId='+id
+                    , offset: 'auto'
+                    , area: ['480px', '430px']
+                });
+            });
+        });
+    });
+
+
+</script>
+</body>
+<div th:replace="commons/footer" ></div>

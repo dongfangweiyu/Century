@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" th:href="@{/static/images/icon.ico}" type="image/x-icon" />
+    <title>用户管理</title>
+    <object th:replace="commons/header :: headerTop"></object>
+</head>
+
+<body>
+<div style="margin: 15px;">
+
+    <fieldset class="layui-elem-field" id="allotTeachArea">
+        <div class="layui-field-box layui-form">
+            <blockquote class="layui-elem-quote layui-form-pane layui-row">
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="width: 100px;">页面名称</label>
+                    <div class="layui-input-inline">
+                        <input th:type="text" name="searchName" id="searchName" autocomplete="off" class="layui-input"
+                               style="width: 100px;" value=""/>
+                    </div>
+                </div>
+                <a href="javascript:search();" class="layui-btn layui-btn-sm" id="search"><i class="layui-icon">&#xe615;</i></a>
+            </blockquote>
+            <table id="allotTable" class="layui-table admin-table" lay-filter="allotTableFilter" lay-size="sm" style="width:400px;"></table>
+        </div>
+    </fieldset>
+
+
+</div>
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="allot">指定</a>
+</script>
+
+<script th:inline="javascript">
+    layui.use(['form', 'layedit', 'laydate'], function () {
+        var layer = layui.layer;
+    });
+
+    function search() {
+
+        layui.use('table', function () {
+            var table = layui.table;
+
+            table.render({
+                elem: '#allotTable',
+                height: 315,
+                url: '/private/nav/paths',
+                page: true,
+                where: {
+                    keyword: $("#searchName").val()
+                },
+                cols: [[//标题栏
+                    {field: 'id', title: 'ID', width: 10, fixed: 'left'},
+                    {field: 'name', title: '页面名称', width: 180},
+                    {field: 'href', title: '页面地址', width: 180},
+                    {field: '操作', title: '操作', toolbar: '#barDemo', width: 100}
+                ]]
+            });
+
+
+            table.on('tool(allotTableFilter)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+                var data = obj.data; //获得当前行数据
+                var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+                var tr = obj.tr; //获得当前行 tr 的DOM对象
+
+                if (layEvent === 'allot') {
+                    if ($('#content', window.parent.document).html().trim() != "") {
+                        alert("当前已指定了页面，请先删除原有指定");
+                        return;
+                    }
+                    var index = $(".teacher").length;
+                    $('#navForm', window.parent.document).append("<input type='hidden' name='pageId' value='" +
+                        data.id + "' class='teacher' /> ");
+                    $('#content', window.parent.document).html($('#content', window.parent.document).html() + "<tr id='tr" + index + "'><td>" + data.name + "</td><td>" + data.href + "</td><td><a href='javascript:void(0);' class='feijin-remove' data-id='" + index + "' >删除</a></td>");
+                    parent.showAuthority(data.id);
+                    parent.closeRoute();
+                }
+            });
+
+        });
+
+    }
+
+    $(function () {
+        search();
+    });
+
+</script>
+
+</body>
+</html>

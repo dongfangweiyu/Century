@@ -1,0 +1,94 @@
+<div th:replace="commons/header::html" ></div>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+
+        </div>
+        <div class="layui-card-body">
+            <form th:method="${_method }" class="layui-form">
+                <input type="hidden" name="_method" th:value="${_method}"/>
+                <input type="hidden" name="behalfGroupId" th:value="${bean.behalfGroupId}"/>
+                <input type="hidden" name="behalfUserId" th:value="${bean.behalfUserId}"/>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">银行名称</label>
+                    <div class="layui-input-block">
+                        <!--<input name="bankName" th:value="${bean.bankName}" class="layui-input" placeholder="请输入银行卡名称，例如：建设银行" required lay-verify="required" autocomplete="off"/>-->
+                        <select name="bankName" id="allBank" lay-filter="allBank" lay-verify="required" required>
+                            <option th:each="item:${allBank}"
+                                    th:value="${item.bankName}"
+                                    th:text="${item.bankName}">
+
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">姓名</label>
+                    <div class="layui-input-block">
+                        <input name="realName" th:value="${bean.realName}" class="layui-input" placeholder="请输入持卡人姓名，例如：张三" required lay-verify="required" autocomplete="off"/>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">卡号</label>
+                    <div class="layui-input-block">
+                        <input name="bankNo" th:value="${bean.bankNo}" class="layui-input" placeholder="请输入银行卡卡号" required lay-verify="required" autocomplete="off"/>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">支行</label>
+                    <div class="layui-input-block">
+                        <input name="bankBranch" th:value="${bean.bankBranch}" class="layui-input" placeholder="请输入支行信息 （选填）"  autocomplete="off"/>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">备注</label>
+                    <div class="layui-input-block">
+                        <textarea class="layui-textarea" name="remark" th:value="${bean.remark}" style="height:75px;"  placeholder="请输入备注信息 （选填）"></textarea>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit lay-filter="formSubmit">保存</button>
+                        <a href="javascript:close();" class="layui-btn layui-btn-primary">关闭</a>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    layui.use(['layer','form'], function () {
+        var layer = layui.layer;
+        var $=layui.$;
+        var form=layui.form;
+
+        //提交表单
+        form.on("submit(formSubmit)",function(obj){
+            $.post('',obj.field,function(data){
+                layer.alert(data.msg,function(index){
+                    layer.close(index);
+                    if(data.code==1){
+                        parent.location.reload();
+                    }
+                });
+            });
+            return false;
+        });
+    });
+
+    function close(){
+        var index = parent.layer.getFrameIndex(window.name);
+        parent.layer.close(index);
+    }
+
+</script>
+</body>
+<div th:replace="commons/footer" ></div>

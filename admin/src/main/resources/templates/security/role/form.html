@@ -1,0 +1,91 @@
+<div th:replace="commons/header::html" ></div>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                <legend th:if="${_method eq 'POST'}">添加角色</legend>
+                <legend th:if="${_method eq 'PUT'}">修改角色</legend>
+            </fieldset>
+
+        </div>
+        <div class="layui-card-body">
+            <form th:method="${_method }" class="layui-form">
+                <input type="hidden" name="_method" th:value="${_method}"/>
+                <input type="hidden" name="id" th:value="${role.id}"/>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">角色名称</label>
+                    <div class="layui-input-block">
+                        <input name="name" th:value="${role.name}" required class="layui-input" placeholder="角色名称" />
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">角色描述</label>
+                    <div class="layui-input-block">
+                        <input name="description" th:value="${role.description}" required  class="layui-input" placeholder="角色描述"/>
+                    </div>
+                </div>
+
+
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <input type="button" value="保存" class="layui-btn" id="save">
+                        <div style="display: none"><input type="submit" value="保存" class="layui-btn" id="submit"></div>
+                        <button type="button" onclick="location.href='JavaScript:history.go(-1);'"
+                                class="layui-btn layui-btn-primary">取消
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    layui.use(['layer'], function () {
+        var layer = layui.layer;
+        var $=layui.$;
+
+        $(function () {
+            //加载时，全选按钮判断是否勾选
+            $(".authgroupbox").each(function () {
+                $(this).prop("checked", isSelect($(this).siblings('input[type=checkbox]')));
+            });
+            //子多选按钮点击时，全选按钮判断是否勾选
+            $(".authgroupbox").click(function () {
+                if (this.checked) {
+                    $(this).siblings("input[type=checkbox]").prop("checked", true);
+                } else {
+                    $(this).siblings("input[type=checkbox]").attr("checked", false);
+                }
+            });
+            //全选按钮改变时，子多选按钮对应改变
+            $(".authbox").change(function () {
+                if (this.checked) {
+                    $(this).siblings('input[class=authgroupbox]').prop("checked", isSelect($(this).siblings('input[class=authbox]')));
+                } else {
+                    $(this).siblings('input[class=authgroupbox]').attr("checked", false);
+                }
+            });
+
+            $("#save").click(function () {
+                $("#submit").click();
+            });
+        });
+        function isSelect(elements) {
+            var flag = true;
+            elements.each(function () {
+                if (!this.checked) {
+                    flag = false;
+                    return false;//当有一个未选中的checkbox，跳出全部循环
+                }
+            });
+            return flag;
+        }
+    });
+
+</script>
+</body>
+<div th:replace="commons/footer" ></div>

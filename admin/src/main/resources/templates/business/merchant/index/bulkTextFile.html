@@ -1,0 +1,85 @@
+<div th:replace="commons/header::html" ></div>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+            </fieldset>
+
+        </div>
+        <div class="layui-card-body">
+            <form class="layui-form" action="javascript:void(0);">
+                <div class="layui-form-item" style="margin-top:20px;" >
+                    <label class="layui-form-label">导入文本</label>
+                    <div class="layui-input-inline" >
+                        <a class="layui-btn layui-btn-danger uploadBatchBehalf" ><i class="layui-icon">&#xe642;</i>文本批量下单</a>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <a href="javascript:close();" class="layui-btn layui-btn-primary">关闭</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    layui.use(['layer','form','transfer','upload'], function () {
+        var layer = layui.layer;
+        var form=layui.form;
+        var $=layui.$;
+        var transfer=layui.transfer;
+        var upload = layui.upload;
+
+        upload.render({
+            elem: '.uploadBatchBehalf',
+            url: '/private/merchantIndex/upload',
+            accept: 'file',
+            exts: 'xls|xlsx', //只允许上传excel文件
+            contentType: false,
+            processData: false,
+            data: FormData,
+            before: function () {
+                falg = true;
+            },
+            done: function (result) {
+                falg=false;
+                if (result.code == 1) {
+                    var textPath=result.data.path;
+                    if(textPath==undefined||textPath.length<=0){
+                        layer.msg("批量文本上传失败");
+                        return;
+                    }
+                    $.post('/private/merchantIndex/bulkText',{'textPath':textPath},function(data){
+                        if(data.code==1){
+                            layer.msg(data.msg);
+                            window.location.reload();
+                            close();
+                        }else{
+                            layer.msg(data.msg);
+                        }
+                    });
+                } else {
+                    layer.msg(result.msg);
+                }
+            },
+            error: function () {
+                falg = false;
+                layer.msg("上传异常, 请重新上传。")
+
+            }
+        });
+
+    });
+    function close(){
+        var index = parent.layer.getFrameIndex(window.name);
+        parent.layer.close(index);
+    }
+
+</script>
+</body>
+<div th:replace="commons/footer" ></div>

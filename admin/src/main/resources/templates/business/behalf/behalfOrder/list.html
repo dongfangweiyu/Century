@@ -1,0 +1,380 @@
+<div th:replace="commons/header::html" ></div>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <blockquote class="layui-elem-quote" id="newOrderBlock" style="display: none;">您有新订单。
+                <a href="javascript:window.location.reload();" style="color: blue;">点击刷新查看</a>
+            </blockquote>
+            <audio controls="controls" id="audio" style="display: none">
+                <source th:src="@{/static/media/newOrder.mp3}" type="audio/mpeg">
+                您的浏览器不支持 audio 元素。
+            </audio>
+            <form id="totalForm" class="layui-form layui-form-pane" th:action="@{/private/behalfWithdrawOrder/findListBehalfOrder}"
+                  th:method="GET">
+                <input type="hidden" id="size" th:value="${pager.size}" name="size">
+                <input type="hidden" id="page" th:value="${pager.page}" name="page">
+                <input id="realNameHidden"style="opacity: 0" readonly value="复制姓名" />
+                <input id="bankNoHidden" style="opacity: 0" readonly  value="复制卡号"/>
+                <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                    <legend>条件筛选</legend>
+                </fieldset>
+                <div class="layui-row layui-col-space15">
+                    <div class="layui-col-md3">
+                        <div class="layui-card">
+                            <div class="layui-card-body">总代付金额</div>
+                            <div class="layui-card-header">
+                                <span style="font-size: 30px;font-weight: bold;" th:text="${behalfOrderTotal.behalfOrderMoneyTotal}"></span>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="layui-col-md3">
+                        <div class="layui-card">
+                            <div class="layui-card-body">总成功金额</div>
+                            <div class="layui-card-header">
+                                <span style="font-size: 30px;font-weight: bold;" th:text="${behalfOrderTotal.behalfOrderSuccessTotal}"></span>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="layui-col-md3">
+                        <div class="layui-card">
+                            <div class="layui-card-body">总笔数</div>
+                            <div class="layui-card-header">
+                                <span style="font-size: 30px;font-weight: bold;" th:text="${behalfOrderTotal.totalBehalfOrderCount}"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md3">
+                        <div class="layui-card">
+                            <div class="layui-card-body">总成功笔数</div>
+                            <div class="layui-card-header">
+                                <span style="font-size: 30px;font-weight: bold;" th:text="${behalfOrderTotal.behalfOrderSuccessCount}"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">日期</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="beginTime" name="beginTime"
+                                   th:value="${behalfOrderReq.beginTime}"
+                                   placeholder="起始时间" autocomplete="off" class="layui-input" />
+                        </div>
+                        <div class="layui-form-mid">-</div>
+                        <div class="layui-input-inline">
+                            <input type="text" id="endTime" name="endTime"
+                                   th:value="${behalfOrderReq.endTime}"
+                                   placeholder="结束时间" autocomplete="off" class="layui-input" />
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <label class="layui-form-label">状态</label>
+                        <div class="layui-input-inline">
+                            <select name="status" id="status">
+                                <option value="">全部</option>
+                                <option value="PROCESS" th:selected="${behalfOrderReq.status == 'PROCESS'}">处理中</option>
+                                <option value="SUCCESS" th:selected="${behalfOrderReq.status == 'SUCCESS'}">成功</option>
+                                <option value="FAIL" th:selected="${behalfOrderReq.status == 'FAIL'}">失败</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">订单号</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="orderNo" placeholder="请输入订单号查询" th:value="${behalfOrderReq.orderNo}"
+                                   autocomplete="off" class="layui-input"/></div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">商户订单号</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="outOrderNo" placeholder="请输入商户订单号查询" th:value="${behalfOrderReq.outOrderNo}"
+                                   autocomplete="off" class="layui-input"/></div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">处理人</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="dealAccount" placeholder="请输入处理人查询" th:value="${behalfOrderReq.dealAccount}"
+                                   autocomplete="off" class="layui-input"/></div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">商户账号</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="withdrawAccount"  id="withdrawAccount"placeholder="请输入商户账号查询" th:value="${behalfOrderReq.withdrawAccount}"
+                                   autocomplete="off" class="layui-input"/></div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <label class="layui-form-label">付款卡号</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="behalfBankNo" placeholder="请输入付款银行卡号查询" th:value="${behalfOrderReq.behalfBankNo}"
+                                   autocomplete="off" class="layui-input"/></div>
+                    </div>
+                    <div class="layui-inline">
+                        <input type="submit"  lay-submit  lay-filter="submitBtn" value="搜索" class="layui-btn" />
+                    </div>
+                    <div class="layui-inline">
+                        <a href="javascript:excel();"  style="width:100px;"
+                           class="layui-btn layui-btn-danger">导出订单</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="layui-card-body">
+            <table class="layui-table">
+                <thead>
+                <tr>
+                    <th>订单号</th>
+                    <th>商户账号</th>
+                    <th>收款信息</th>
+                    <th>提现金额</th>
+                    <th>提现时间</th>
+                    <th>回调时间</th>
+                    <th>成功时间</th>
+                    <th>结束时间</th>
+                    <th>付款信息</th>
+                    <th>转账凭证</th>
+                    <th style="width: 50px;">状态</th>
+                    <th>处理人</th>
+                    <th>备注</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody id="content">
+                <tr id="app-tr-${item.id}" th:each="item : ${listByCondition.content}">
+                    <!--<td th:text="${item.id}"></td>-->
+                    <td th:text="${item.orderNo}"></td>
+                    <td th:text="${item.withdrawAccount}"></td>
+                    <td th:text="${item.bankCardInfo}">
+                    </td>
+                    <td th:text="${item.amount}"></td>
+                    <td th:text="${#dates.format(item.createTime, 'yyyy-MM-dd HH:mm')}"></td>
+                    <td th:text="${#dates.format(item.completeTime, 'yyyy-MM-dd HH:mm')}"></td>
+                    <td th:text="${#dates.format(item.successTime, 'yyyy-MM-dd HH:mm')}"></td>
+                    <td th:text="${#dates.format(item.closeTime, 'yyyy-MM-dd HH:mm')}"></td>
+                    <td th:text="${item.behalfBankCardInfo}"></td>
+                    <td th:if="${item.paymentVoucher !=null}" ><a target="_blank" class="layui-btn layui-btn-warm layui-btn-xs feijin-modify" th:href="${payUrl+item.paymentVoucher}">点击查看</a></td>
+                    <td th:if="${item.paymentVoucher ==null}">暂无凭证</td>
+                    <td th:switch="${item.status != null}">
+                        <span th:case="${item.status == 'PROCESS'}">待处理</span>
+                        <span style="color: green;" th:case="${item.status == 'SUCCESS'}">成功</span>
+                        <span style="color: red;" th:case="${item.status == 'FAIL'}">失败</span>
+                    </td>
+                    <td th:text="${item.dealAccount}"></td>
+                    <td th:text="${item.remark}"></td>
+                    <td>
+                       <!-- <a th:if="${item.status.toString() eq 'PROCESS' && item.paymentVoucher == null}"
+                           th:attr="data-orderId=${item.id}" lay-data="{accept: 'images',acceptMime: 'image/jpg, image/png'}"
+                           class="layui-btn layui-btn-danger layui-btn-xs uploadBtn">上传下发转账凭证</a>-->
+                        <a th:if="${item.status.toString() eq 'PROCESS'}"th:data="${item.id}"
+                           class="layui-btn  layui-btn-xs queren-withdraw">确认订单</a>
+                        <a th:if="${item.status == 'PROCESS'}" th:data="${item.id}"
+                           class="layui-btn layui-btn-danger layui-btn-xs feijin-remove"><i
+                                class="layui-icon">&#xe640;</i>取消</a>
+                        <a th:if="${item.status.toString() eq 'PROCESS'}" href="javascript:void(0);"  onclick= "copyRealName(this)"  th:value="${item.realName}" class="layui-btn layui-btn-normal layui-btn-xs ">复制姓名</a>
+                        <a th:if="${item.status.toString() eq 'PROCESS'}" href="javascript:void(0);"  onclick= "copyBankNo(this)"  th:value="${item.bankNo}" class="layui-btn layui-btn-warm layui-btn-xs ">复制卡号</a>
+                    </td>
+                </tr>
+                </tbody>
+                <tfoot >
+
+                </tfoot>
+            </table>
+            <div id="footer_page"></div>
+        </div>
+    </div>
+</div>
+<script th:inline="javascript">
+    var lastId=[[${lastId}]];
+    var $;
+    layui.use(['form', 'layedit', 'laydate', 'laypage','layer','upload'], function () {
+        var layer=layui.layer;
+        var laydate = layui.laydate;
+        var laypage = layui.laypage;
+        var form = layui.form;
+        var upload = layui.upload;
+        $=layui.$;
+        laydate.render({
+            elem: '#beginTime'
+            ,type: 'datetime'
+        });
+        laydate.render({
+            elem: '#endTime'
+            ,type: 'datetime'
+        });
+        laypage.render({
+            elem: 'footer_page',
+            count: [[${listByCondition.getTotalElements()}]],
+            limit: 20,
+            layout: ['count', 'prev', 'page', 'next', 'skip'],
+            curr: [[${pager.page}]],
+            jump: function(obj, first){
+                if (!first) {
+                    $("#page").val(obj.curr);
+                    $("#size").val(obj.limit);
+                    $("#totalForm").submit();
+                }
+            }
+        });
+
+        //监听提交
+        form.on('submit(submitBtn)', function(data){
+            $("#page").val(1);
+            $("#totalForm").submit();
+        });
+
+        upload.render({
+            elem: '.uploadBtn',
+            url: '/private/behalfWithdrawOrder/upload',
+            accept: 'file',
+            contentType: false,
+            processData: false,
+            data: FormData,
+            before: function () {
+                falg = true;
+            },
+            done: function (result) {
+                falg=false;
+                if (result.code == 1) {
+                    layer.msg(result.msg);
+
+                    var orderId=$(this.item).attr('data-orderId');
+                    var payment=result.data.fileName;
+                    if(orderId==undefined||orderId.length<=0||payment==undefined||payment.length<=0){
+                        layer.msg("凭证上传失败");
+                        return;
+                    }
+                    $.post('/private/behalfWithdrawOrder/confirm',{'orderId':orderId,'paymentVoucher':payment},function(data){
+                        if(data.code==1){
+                            layer.msg(result.msg);
+                            window.location.reload();
+                        }else{
+                            layer.msg(result.msg);
+                        }
+                    });
+                } else {
+                    layer.msg(result.msg);
+                }
+            },
+            error: function () {
+                falg = false;
+                layer.msg("上传异常, 请重新上传。")
+
+            }
+        });
+
+        setInterval(function(){
+            $.post('/private/behalfWithdrawOrder/newOrder',{lastId:lastId},function(data){
+                if(data.code==1){
+                    audioAutoPlay();
+                    $("#newOrderBlock").show();
+                }else{
+                    $("#newOrderBlock").hide();
+                }
+            });
+        },3000);
+
+        //取消操作
+        $(".feijin-remove").click(function () {
+            var id = $(this).attr("data");
+            layer.open({
+                type: 2,
+                title: '取消订单，填写原因',
+                content: '/private/behalfWithdrawOrder/cancel?id='+id
+                , offset: 'auto'
+                , area: ['480px', '280px']
+            });
+        });
+
+        //确认操作
+        $(".queren-withdraw").click(function () {
+            var id = $(this).attr("data");
+            layer.open({
+                type: 0,
+                title: '确认提现',//自定义标题样式
+                border: [0],
+                content: '<span class="orange">确认操作，确定该提现订单吗？</span>',
+                btn: ['确认', '取消'],
+                yes: function () {
+                    $.ajax({
+                        type: "post",
+                        url: "/private/behalfWithdrawOrder/confirmOrder",
+                        data: {
+                            "id": id
+                        },
+                        success: function (data) {
+                            if (data.code == 1) {
+                                layer.msg("确认成功")
+                                window.location.reload();
+                            } else if (data.code == -1) {
+                                layer.msg(data.msg);
+                            }
+                        }
+                    });
+                },
+                no: function () {
+                    layer.close(index);
+                }
+            });
+        });
+    });
+
+
+    function audioAutoPlay() {
+        var audio = document.getElementById('audio');
+        audio.play();
+    }
+    //复制订单收款信息持卡人姓名
+    function copyRealName(obj) {
+        var thisObj=$(obj);//js对象转jquery对象
+        var realName=thisObj.attr("value");
+        var e=document.getElementById("realNameHidden");
+        e.value=realName;
+        e.select();
+        document.execCommand("copy");
+        layer.msg("复制姓名成功");
+    }
+
+    //复制订单收款卡号
+    function copyBankNo(obj) {
+        var thisObj=$(obj);//js对象转jquery对象
+        var bankNo=thisObj.attr("value");
+        var e=document.getElementById("bankNoHidden");
+        e.value=bankNo;
+        e.select();
+        document.execCommand("Copy");
+        layer.msg("复制卡号成功");
+    }
+
+    function excel(){
+        var beginTime=$("#beginTime").val();
+        var endTime=$("#endTime").val();
+        var status=$("#status").val();
+        var withdrawAccount=$("#withdrawAccount").val();
+        if(beginTime==undefined||beginTime.length<=0||endTime==undefined||endTime.length<=0){
+            layer.alert("请选择时间段,再点击导出");
+            return;
+        }
+
+        var date1 = new Date(beginTime.replace(/-/g,"/"));
+        var date2 = new Date(endTime.replace(/-/g,"/"));
+        if(date2.getTime()<date1.getTime()){
+            layer.alert("开始时间不能大于结束时间");
+            return false;
+        }
+        var day = parseInt(((date2.getTime()-date1.getTime())/1000)/(24*60*60));
+        if(day>1){
+            layer.alert("导出数据查询时间不能超过1天");
+            return false;
+        }
+        window.location.href='/private/behalfWithdrawOrder/excel?beginTime='+beginTime+"&endTime="+endTime+"&status="+status+"&withdrawAccount="+withdrawAccount;
+    }
+</script>
+
+</body>
+<div th:replace="commons/footer" ></div>

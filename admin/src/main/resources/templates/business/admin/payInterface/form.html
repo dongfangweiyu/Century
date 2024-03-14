@@ -1,0 +1,104 @@
+<div th:replace="commons/header::html" ></div>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <!--<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">-->
+                <!--<legend th:if="${_method eq 'POST'}">配置接口</legend>-->
+            <!--</fieldset>-->
+
+        </div>
+        <div class="layui-card-body">
+            <form th:method="${_method }" class="layui-form">
+                <input type="hidden" name="_method" th:value="${_method}"/>
+                <input type="hidden" name="payInterfaceEnum" th:value="${bean.payInterfaceEnum.name()}"/>
+                <input type="hidden" name="id" th:value="${bean.id}"/>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">配置名称</label>
+                    <div class="layui-input-block">
+                        <input name="configName" th:value="${bean.configName}" class="layui-input" placeholder="请输入配置名称，列如：配置一，配置二" required lay-verify="required" autocomplete="off"/>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">第三方下单网关</label>
+                    <div class="layui-input-block">
+                        <input name="createOrderUrl" th:value="${bean.createOrderUrl}" class="layui-input" placeholder="请输入第三方下单网关,例如： http://www.baidu.com/order/create" required lay-verify="required" autocomplete="off"/>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">第三方商户APPID</label>
+                    <div class="layui-input-block">
+                        <input name="appId" th:value="${bean.appId}" class="layui-input" placeholder="请输入第三方商户APPID" required lay-verify="required" autocomplete="off"/>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">第三方商户秘钥</label>
+                    <div class="layui-input-block">
+                        <input name="secret" th:value="${bean.secret}" class="layui-input" placeholder="请输入第三方商户秘钥" required lay-verify="required" autocomplete="off"/>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">第三方回调IP</label>
+                    <div class="layui-input-block">
+                        <input name="bindIP" th:value="${bean.bindIP}" class="layui-input" placeholder="第三方回调IP|如有多个以,隔开（不填写则不绑定）" autocomplete="off"/>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">通道余额限制</label>
+                    <div class="layui-input-block">
+                        <input name="balanceLimit" placeholder="请输入通道余额限制" class="layui-input"  th:value="${bean.balanceLimit}" autocomplete="off"/>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">自定义参数json</label>
+                    <div class="layui-input-block">
+                        <textarea name="json" placeholder="请输入自定义参数json，格式为标准JSON格式（选填）" class="layui-textarea" th:text="${bean.json}" autocomplete="off"></textarea>
+                    </div>
+                </div>
+
+
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit lay-filter="formSubmit">保存</button>
+                        <a href="javascript:close();" class="layui-btn layui-btn-primary">关闭</a>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    layui.use(['layer','form'], function () {
+        var layer = layui.layer;
+        var $=layui.$;
+        var form=layui.form;
+
+        //提交表单
+        form.on("submit(formSubmit)",function(obj){
+            $.post('',obj.field,function(data){
+                layer.alert(data.msg,function(index){
+                    layer.close(index);
+                    if(data.code==1){
+                        parent.location.reload();
+                    }
+                });
+            });
+            return false;
+        });
+    });
+
+    function close(){
+        var index = parent.layer.getFrameIndex(window.name);
+        parent.layer.close(index);
+    }
+
+</script>
+</body>
+<div th:replace="commons/footer" ></div>

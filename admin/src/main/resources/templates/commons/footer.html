@@ -1,0 +1,15 @@
+<script th:inline="javascript">
+    var message=[[${message}]];
+    layui.use(['layer'], function () {
+        var layer = layui.layer;
+        var $ = layui.$;
+
+        if(message!=null&&message.length>0){
+            layer.msg(message, {
+                icon: 1
+            });
+        }
+
+    });
+</script>
+</html>

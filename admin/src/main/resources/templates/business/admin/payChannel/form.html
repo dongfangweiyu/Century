@@ -1,0 +1,166 @@
+<div th:replace="commons/header::html" ></div>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                <legend th:if="${_method eq 'POST'}">添加支付通道</legend>
+                <legend th:if="${_method eq 'PUT'}">修改支付通道</legend>
+            </fieldset>
+
+        </div>
+        <div class="layui-card-body">
+            <form th:method="${_method }" class="layui-form">
+                <input type="hidden" name="_method" th:value="${_method}"/>
+                <input type="hidden" name="id" th:value="${bean.id}"/>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">通道名称</label>
+                    <div class="layui-input-block">
+                        <input name="channelName" th:value="${bean.channelName}" class="layui-input" placeholder="通道名称" required lay-verify="required" style="width: 300px;"/>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">通道接口</label>
+                    <div class="layui-input-inline" style="width: 300px;">
+                        <select name="payInterface" lay-filter="payInterface" lay-verify="required" required>
+                            <option value="">请选择通道接口</option>
+                            <option th:each="item:${payInterfaceValues}" th:value="${item.name()}" th:selected="${bean.payInterface==null?false:item.name() eq bean.payInterface.name()}"  th:text="${item.title}"></option>
+                        </select>
+                    </div>
+
+                    <div class="layui-input-inline" style="width: 300px;">
+                        <select name="payInterfaceType" id="payInterfaceType" lay-filter="payInterfaceType" lay-verify="required" required>
+                            <obj th:if="${bean.payInterface}">
+                                <option th:each="item:${bean.payInterface.types}"
+                                        th:value="${item.value}"
+                                        th:selected="${item.value eq bean.payInterfaceType}"
+                                        th:text="${item.title}">
+
+                                </option>
+                            </obj>
+                        </select>
+                    </div>
+
+                    <div class="layui-input-inline" style="width: 300px;">
+                        <select name="configPayInterfaceId" id="configPayInterfaceId" lay-filter="configPayInterfaceId"  lay-verify="required" required>
+                            <option th:each="item:${configPayInterfaceList}"
+                                    th:value="${item.id}"
+                                    th:selected="${item.id eq bean.configPayInterfaceId}"
+                                    th:text="${item.configName+' （appId:'+item.appId +'）'}">
+
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">第三方费率</label>
+                    <div class="layui-input-inline">
+                        <input type="number" name="rate" required lay-verify="required" placeholder="第三方费率"  th:value="${bean.rate}"
+                               min="0" max="100" step="0.01" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">%&nbsp;例如: 2%  3.5%</div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">第三方官网</label>
+                    <div class="layui-input-block">
+                        <input name="channelHost" th:value="${bean.channelHost}" class="layui-input" placeholder="第三方官网" required lay-verify="required" style="width:
+                300px;"/>
+                    </div>
+                </div>
+
+                <!--<div class="layui-form-item">-->
+                    <!--<label class="layui-form-label">信誉分</label>-->
+                    <!--<div class="layui-input-block">-->
+                        <!--<input name="creditScore" th:value="${bean.creditScore}" class="layui-input" placeholder="信誉分" required lay-verify="required" style="width:-->
+                <!--300px;"/>-->
+                    <!--</div>-->
+                <!--</div>-->
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">支付编码</label>
+                    <div class="layui-input-block">
+                        <input type="hidden" id="payCodeIds" value name="payCodeIds" />
+                        <div id="payCode" class="demo-transfer"></div>
+                    </div>
+                </div>
+
+
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <input type="submit" value="保存" lay-submit lay-filter="addPayChannel" class="layui-btn" />
+                        <button type="button" onclick="location.href='/private/payChannel/list'"
+                                class="layui-btn layui-btn-primary">取消
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    layui.use(['layer','form','transfer'], function () {
+        var layer = layui.layer;
+        var form=layui.form;
+        var $=layui.$;
+        var transfer=layui.transfer;
+
+        //基础效果
+        transfer.render({
+            id:'payCode',
+            elem: '#payCode'
+            ,title: ['未选', '已选']
+            ,data: [[${transferData}]]
+            ,value:[[${selectedPayCodesIds}]]
+        });
+
+        form.on('submit(addPayChannel)',function(obj){
+            var data=transfer.getData('payCode');
+            var ids=new Array();
+            for (var d in data){
+                ids.push(data[d].value);
+            }
+            $("#payCodeIds").val(ids.join());
+            return true;
+        });
+
+        form.on('select(payInterface)', function(data) {
+            var val = data.value;
+            if(val){
+                $.post('/private/payChannel/getPayInterfaceType',{'payInterface':val},function(data){
+                    if(data.code==1){
+                        var payTypeList=data.data.payType;
+                        var configList=data.data.configList;
+
+                        $("#payInterfaceType").empty();
+                        for(var p in payTypeList) {
+                            $("#payInterfaceType").append("<option value='"+payTypeList[p].value+"'>"+payTypeList[p].title+"</option>");
+                        }
+
+
+
+                        $("#configPayInterfaceId").empty();
+                        for(var p in configList) {
+                            $("#configPayInterfaceId").append("<option value='"+configList[p].id+"'>"+configList[p].configName+"（appId："+configList[p].appId+"）</option>");
+                        }
+
+                        form.render('select');
+                    }else{
+                        layer.msg(data.msg);
+                    }
+                });
+            }else{
+                $("#payInterfaceType").empty();
+                $("#configPayInterfaceId").empty();
+                form.render('select');
+            }
+        });
+    });
+
+</script>
+</body>
+<div th:replace="commons/footer" ></div>

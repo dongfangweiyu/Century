@@ -1,0 +1,23 @@
+<div th:replace="commons/header::html" ></div>
+<body>
+
+
+<div class="layui-fluid">
+  <div class="layadmin-tips">
+    <i class="layui-icon" face>&#xe664;</i>
+    
+    <div class="layui-text" style="width:100%;font-size: 20px;color:red;" th:text="${message}">
+
+    </div>
+
+    <div class="layui-text" style="width:100%;font-size: 12px;">
+      <!--<pre class="layui-code" th:text="${message}">//在里面存放任意的代码-->
+
+      <!--</pre>-->
+      <a th:if="${returnUrl}" th:href="${returnUrl}" class="layui-btn layui-btn-danger" style="width:100%">返回</a>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

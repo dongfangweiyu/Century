@@ -1,0 +1,80 @@
+<div th:replace="commons/header::html" ></div>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                <legend th:if="${_method eq 'POST'}">添加卡商</legend>
+                <legend th:if="${_method eq 'PUT'}">修改卡商</legend>
+            </fieldset>
+
+        </div>
+        <div class="layui-card-body">
+            <form th:method="${_method }" class="layui-form">
+                <input type="hidden" name="_method" th:value="${_method}"/>
+                <input type="hidden" name="userId" th:value="${bean.userId}"/>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">登录账号</label>
+                    <div class="layui-input-inline">
+                        <input th:readonly="${_method eq 'POST' ? 'false':'readonly'}" maxlength="12"  name="behalfAccount" th:value="${bean.behalfAccount}" class="layui-input" placeholder="请输入账号" required/>
+                    </div>
+                    <div th:if="${_method eq 'POST'}"  class="layui-form-mid layui-word-aux" >@behalf.com</div>
+
+                </div>
+
+                <div th:if="${_method eq 'POST'}" class="layui-form-item">
+                    <label class="layui-form-label">登录密码</label>
+                    <div class="layui-input-block">
+                        <input name="password" th:value="888888" class="layui-input"  disabled="disabled"  lay-verify="required" style="background:grey;"/>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">卡商名称</label>
+                    <div class="layui-input-block">
+                        <input name="companyName" th:value="${bean.companyName}" class="layui-input" placeholder="请输入卡商名称" required />
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">下发费率</label>
+                    <div class="layui-input-inline">
+                        <input type="number" name="behalfRate" th:value="${bean.behalfRate}" maxlength="12" min="0" max="100" step="0.01"  class="layui-input" placeholder="请输入下发费率" required />
+                    </div>
+                    <div  class="layui-form-mid layui-word-aux" >%</div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">单笔收费</label>
+                    <div class="layui-input-inline">
+                        <input type="number" name="behalfFee" th:value="${bean.behalfFee}" maxlength="12" min="0" max="100" step="0.01"  class="layui-input" placeholder="请输入下发单笔收费" required />
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <input type="submit" value="保存" lay-submit lay-filter="addBehalf" class="layui-btn" />
+                        <!--<button type="button" onclick="location.href='/private/merchant/findListMerchant'"-->
+                                <!--class="layui-btn layui-btn-primary">返回-->
+                        <!--</button>-->
+                        <button type="button" onclick="window.history.back();"
+                                class="layui-btn layui-btn-primary">返回
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    layui.use(['layer','form','transfer','element'], function () {
+        var layer = layui.layer;
+        var form=layui.form;
+        var $=layui.$;
+        var element=layui.element;
+
+    });
+
+</script>
+</body>
+<div th:replace="commons/footer" ></div>

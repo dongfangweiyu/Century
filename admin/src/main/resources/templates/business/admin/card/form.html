@@ -1,0 +1,45 @@
+<div th:replace="commons/header::html" ></div>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                <legend th:if="${_method eq 'POST'}">添加银行卡</legend>
+            </fieldset>
+
+        </div>
+        <div class="layui-card-body">
+            <form th:method="${_method }" class="layui-form">
+                <input type="hidden" name="_method" th:value="${_method}"/>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">银行卡名称</label>
+                    <div class="layui-input-block">
+                        <input name="bankName" th:value="${bean.bankName}" class="layui-input" placeholder="请输入银行卡名称" required lay-verify="required" />
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <input type="submit" value="保存" class="layui-btn" id="submit" />
+                        <button type="button" onclick="location.href='JavaScript:history.go(-1);'"
+                                class="layui-btn layui-btn-primary">取消
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    layui.use(['layer'], function () {
+        var layer = layui.layer;
+        var $=layui.$;
+
+    });
+
+</script>
+</body>
+<div th:replace="commons/footer" ></div>

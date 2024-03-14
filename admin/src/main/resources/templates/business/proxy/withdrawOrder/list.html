@@ -1,0 +1,231 @@
+<div th:replace="commons/header::html" ></div>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <form id="totalForm" class="layui-form layui-form-pane" th:action="@{/private/proxyWorder/findListWithdrawOrder}"
+                  th:method="GET">
+                <input type="hidden" id="size" th:value="${pager.size}" name="size">
+                <input type="hidden" id="page" th:value="${pager.page}" name="page">
+                <div class="layui-row layui-col-space15">
+                    <div class="layui-col-md3">
+                        <div class="layui-card">
+                            <div class="layui-card-header">账户余额</div>
+                            <div class="layui-card-body">
+                                <span style="font-size: 30px;font-weight: bold;" th:text="${wallet.money}"></span>
+                                <a  class="layui-btn layui-btn-danger  withdraw" style="margin-left: 20px;"><i class="layui-icon"></i>提现</a>
+<!--                                <a   onclick="javascript:toWithdrawal(this);"  th:attr="data-money=${wallet.money}" class="layui-btn layui-btn-sm" style="margin-left: 70px;">-->
+<!--                                    <i class="layui-icon">&#xe65e;</i>提现</a>-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                    <legend>条件筛选</legend>
+                </fieldset>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">日期</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="beginTime" name="beginTime"
+                                   th:value="${withdrawOrderReq.beginTime}"
+                                   placeholder="起始时间" autocomplete="off" class="layui-input" />
+                        </div>
+                        <div class="layui-form-mid">-</div>
+                        <div class="layui-input-inline">
+                            <input type="text" id="endTime" name="endTime"
+                                   th:value="${withdrawOrderReq.endTime}"
+                                   placeholder="结束时间" autocomplete="off" class="layui-input" />
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <label class="layui-form-label">状态</label>
+                        <div class="layui-input-inline">
+                            <select name="status">
+                                <option value="">全部</option>
+                                <option value="PROCESS" th:selected="${withdrawOrderReq.status == 'PROCESS'}">处理中</option>
+                                <option value="SUCCESS" th:selected="${withdrawOrderReq.status == 'SUCCESS'}">成功</option>
+                                <option value="FAIL" th:selected="${withdrawOrderReq.status == 'FAIL'}">失败</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <input type="submit"  lay-submit  lay-filter="submitBtn" value="搜索" class="layui-btn" />
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="layui-card-body">
+            <table class="layui-table">
+                <thead>
+                <tr>
+                    <th>订单号</th>
+                    <th>提现金额</th>
+                    <th>收款信息</th>
+                    <th>提现时间</th>
+                    <th>结束时间</th>
+                    <th>转账凭证</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody id="content">
+                <tr id="app-tr-${item.id}" th:each="item : ${listByCondition.content}">
+                    <!--<td th:text="${item.id}"></td>-->
+                    <td th:text="${item.orderNo}"></td>
+                    <td th:text="${item.amount}"></td>
+                    <td th:text="${item.bankCardInfo}"></td>
+                    <td th:text="${#dates.format(item.createTime, 'yyyy-MM-dd HH:mm')}"></td>
+                    <td th:text="${#dates.format(item.closeTime, 'yyyy-MM-dd HH:mm')}"></td>
+                    <td th:if="${item.paymentVoucher !=null}" ><a target="_blank" class="layui-btn layui-btn-warm layui-btn-xs feijin-modify" th:href="${payUrl+item.paymentVoucher}">点击查看</a></td>
+                    <td th:if="${item.paymentVoucher ==null}">暂无凭证</td>
+                    <td th:switch="${item.status != null}">
+                        <span th:case="${item.status == 'PROCESS'}">处理中</span>
+                        <span th:case="${item.status == 'SUCCESS'}">成功</span>
+                        <span th:case="${item.status == 'FAIL'}">失败</span>
+                    </td>
+                    <td>
+                        <a th:if="${item.status.toString() eq 'PROCESS' && item.paymentVoucher != null}"th:data="${item.id}"
+                           class="layui-btn layui-btn-danger layui-btn-xs queren-withdraw">确认收款</a>
+                        <a th:if="${item.status == 'PROCESS' && item.paymentVoucher == null}" th:data="${item.id}"
+                           class="layui-btn layui-btn-danger layui-btn-xs feijin-remove"><i
+                                class="layui-icon">&#xe640;</i>取消</a>
+                    </td>
+                </tr>
+                </tbody>
+                <tfoot id="footer_page">
+
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+<script th:inline="javascript">
+    var $;
+    layui.use(['form', 'layedit', 'laydate', 'laypage','layer'], function () {
+        var layer=layui.layer;
+        var laydate = layui.laydate;
+        var laypage = layui.laypage;
+        var form = layui.form;
+        $=layui.$;
+        laydate.render({
+            elem: '#beginTime'
+            ,type: 'datetime'
+        });
+        laydate.render({
+            elem: '#endTime'
+            ,type: 'datetime'
+        });
+        laypage.render({
+            elem: 'footer_page',
+            count: [[${listByCondition.getTotalElements()}]],
+            limit: 10,
+            layout: ['count', 'prev', 'page', 'next', 'skip'],
+            curr: [[${pager.page}]],
+            jump: function(obj, first){
+                if (!first) {
+                    $("#page").val(obj.curr);
+                    $("#size").val(obj.limit);
+                    $("#totalForm").submit();
+                }
+            }
+        });
+
+        //监听提交
+        form.on('submit(submitBtn)', function(data){
+            $("#page").val(1);
+            $("#totalForm").submit();
+        });
+        $(function () {
+            //风控
+            $(".withdraw").click(function () {
+                layer.open({
+                    type: 2,
+                    title: '提现',
+                    content: '/private/proxyWorder/withdraw'
+                    , offset: 'auto'
+                    , area: ['650px', '600px']
+                });
+            });
+        });
+
+
+        $(function () {
+            //删除操作
+            $(".feijin-remove").click(function () {
+                var id = $(this).attr("data");
+                    layer.open({
+                        type: 0,
+                        title: '取消提现',//自定义标题样式
+                        border: [0],
+                        content: '<span class="orange">取消操作，确定取消该提现订单吗？</span>',
+                        btn: ['确认', '取消'],
+                        yes: function () {
+                            $.ajax({
+                                type: "post",
+                                url: "/private/proxyWorder/cancel",
+                                data: {
+                                    "id": id
+                                },
+                                success: function (data) {
+                                    if (data.code == 1) {
+                                        layer.alert("取消成功", "1", function () {
+                                            location.reload();
+                                        });
+                                    } else if (data.code == -1) {
+                                        layer.alert(data.msg);
+                                    }
+                                }
+                            });
+                        },
+                        no: function () {
+                            layer.close(index);
+                        }
+                    });
+            });
+        });
+
+        $(function () {
+            //确认操作
+            $(".queren-withdraw").click(function () {
+                var id = $(this).attr("data");
+                layer.open({
+                    type: 0,
+                    title: '确认提现',//自定义标题样式
+                    border: [0],
+                    content: '<span class="orange">确认操作，确定该提现订单吗？</span>',
+                    btn: ['确认', '取消'],
+                    yes: function () {
+                        $.ajax({
+                            type: "post",
+                            url: "/private/proxyWorder/confirmWOrder",
+                            data: {
+                                "id": id
+                            },
+                            success: function (data) {
+                                if (data.code == 1) {
+                                    layer.alert("确认成功", "1", function () {
+                                        location.reload();
+                                    });
+                                } else if (data.code == -1) {
+                                    layer.alert(data.msg);
+                                }
+                            }
+                        });
+                    },
+                    no: function () {
+                        layer.close(index);
+                    }
+                });
+            });
+        });
+    });
+
+    function  returnMethod() {
+        window.location.href = '/private/proxyWorder/findListWithdrawOrder';
+    }
+</script>
+
+</body>
+<div th:replace="commons/footer" ></div>

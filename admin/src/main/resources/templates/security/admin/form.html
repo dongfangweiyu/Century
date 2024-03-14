@@ -1,0 +1,73 @@
+<div th:replace="commons/header::html" ></div>
+
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                <legend th:switch="${_method}">
+                    <p th:case="'POST'">添加用户</p>
+                    <p th:case="'PUT'">修改用户</p>
+                </legend>
+            </fieldset>
+
+        </div>
+        <div class="layui-card-body">
+            <form th:method="${_method}" class="layui-form">
+                <input type="hidden" name="_method" th:value="${_method}"/>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">账号</label>
+                    <div class="layui-input-inline">
+                        <input name="account" th:value="${user.account}" maxlength="15" required placeholder="请输入账号" class="layui-input" />
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">@admin.com</div>
+                </div>
+
+                <div class="layui-form-item" th:if="${_method eq 'POST'}">
+                    <label class="layui-form-label">密码</label>
+                    <div class="layui-input-block">
+                        <input name="password" th:value="${user.password}" required class="layui-input" placeholder="密码"
+                               />
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">角色列表</label>
+                    <div class="layui-input-block">
+                        <input th:each="item : ${roles}" type="radio"  name="roleID" th:value="${item.id}" th:title="${item.name}"
+                               th:checked="${item.id == user.roleID}"/>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <input type="button" value="保存" class="layui-btn" id="save">
+                        <div style="display: none"><input type="submit" value="保存" class="layui-btn" id="submit"></div>
+                        <button type="button" onclick="location.href='/private/admin/list'"
+                                class="layui-btn layui-btn-primary">取消
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    layui.use(['layer','form'], function () {
+        var layer = layui.layer;
+        var form=layui.form;
+        var $=layui.$;
+
+        $(function () {
+            $("#save").click(function () {
+                $("#submit").click();
+            });
+        });
+    });
+
+</script>
+</body>
+<div th:replace="commons/footer" ></div>

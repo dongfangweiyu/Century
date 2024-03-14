@@ -1,0 +1,67 @@
+<div th:replace="commons/header::html" ></div>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+
+            </fieldset>
+
+        </div>
+        <div class="layui-card-body">
+            <form class="layui-form" action="javascript:void(0);">
+                <input type="hidden" name="_method" th:value="${_method}"/>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">绑定IP</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="behalfIp" th:value="${merchantInfo.behalfIp}" class="layui-input" placeholder="请输入绑定的代付IP|如有多个以,隔开（不填写则不绑定）"/>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit lay-filter="formSubmit">立即提交</button>
+                        <a href="javascript:close();" class="layui-btn layui-btn-primary">关闭</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    layui.use(['layer','form','transfer'], function () {
+        var layer = layui.layer;
+        var form=layui.form;
+        var $=layui.$;
+        var transfer=layui.transfer;
+
+        form.on("submit(formSubmit)",function(obj){
+            console.log(obj);
+            $.post('/private/merchantIndex/editBehalfIp',obj.field,function(data){
+                layer.alert(data.msg,function(index){
+                    layer.close(index);
+                    if(data.code==1){
+                        parent.location.reload();
+                    }
+                });
+            });
+            return false;
+        });
+    });
+    function close(){
+        var index = parent.layer.getFrameIndex(window.name);
+        parent.layer.close(index);
+    }
+
+    //转化正整数
+    function zhzs(value){
+        value = value.replace(/[^\d]/g,'');
+        if(''!=value){
+            value = parseInt(value);
+        }
+        return value;
+    }
+</script>
+</body>
+<div th:replace="commons/footer" ></div>

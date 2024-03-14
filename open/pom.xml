@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+ 	<parent>
+       <artifactId>ra</artifactId>
+       <groupId>com.ra</groupId>
+       <version>2.0</version>
+	</parent>
+    
+	<groupId>com.ra</groupId>
+	<artifactId>open</artifactId>
+	<version>2.0</version>
+	<packaging>jar</packaging>
+
+	<name>open</name>
+	<description>Demo project for Spring Boot</description>
+	
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<java.version>1.8</java.version>
+	</properties>
+
+	<!-- 多环境 -->
+	<profiles>
+        <profile>
+            <id>test</id>
+            <properties>
+                <profileActive>test</profileActive>
+                <test.skip>true</test.skip>
+            </properties>
+
+			<!-- 默认使用本地配置 -->
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+        </profile>
+
+		<profile>
+			<id>prd</id>
+			<properties>
+				<profileActive>prd</profileActive>
+				<test.skip>true</test.skip>
+			</properties>
+		</profile>
+
+		<profile>
+			<id>porsche</id>
+			<properties>
+				<profileActive>porsche</profileActive>
+				<test.skip>true</test.skip>
+			</properties>
+		</profile>
+
+		<profile>
+			<id>century</id>
+			<properties>
+				<profileActive>century</profileActive>
+				<test.skip>true</test.skip>
+			</properties>
+		</profile>
+
+		<profile>
+			<id>jinniu</id>
+			<properties>
+				<profileActive>jinniu</profileActive>
+				<test.skip>true</test.skip>
+			</properties>
+		</profile>
+    </profiles>
+    
+	<dependencies>
+	
+		<dependency>
+        	<groupId>com.ra</groupId>
+			  <artifactId>service</artifactId>
+			  <version>2.0</version>
+        </dependency>
+
+	</dependencies>
+
+	<build>
+		<finalName>${artifactId}-${profileActive}</finalName>
+		 <sourceDirectory>${basedir}/src/main/java</sourceDirectory>
+        <outputDirectory>${basedir}/target/classes</outputDirectory>
+		<resources>
+		    <resource>
+		        <directory>src/main/resources</directory>
+		        <includes>
+					<include>**/templates/**</include>
+					<include>**/static/**</include>
+		            <include>application-${profileActive}.properties</include>
+		            <include>application.properties</include>
+		            <include>*.xml</include>
+					<include>*.jks</include>
+		        </includes>
+				<!-- 不让maven处理字体文件 -->
+				<excludes>
+					<exclude>**/*.woff</exclude>
+					<exclude>**/*.woff2</exclude>
+					<exclude>**/*.ttf</exclude>
+				</excludes>
+		        <filtering>true</filtering>
+		    </resource>
+			<!-- 再把字体文件引入进来 -->
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>false</filtering>
+				<includes>
+					<include>**/*.woff</include>
+					<include>**/*.woff2</include>
+					<include>**/*.ttf</include>
+				</includes>
+			</resource>
+		</resources>
+		<plugins>
+			<!-- 这是spring boot的默认打包插件，会把所有依赖包和资源打到一起 -->
+			<!--<plugin>-->
+				<!--<groupId>org.springframework.boot</groupId>-->
+				<!--<artifactId>spring-boot-maven-plugin</artifactId>-->
+				<!--<dependencies>-->
+                    <!--&lt;!&ndash; spring热部署 &ndash;&gt;-->
+                    <!--<dependency>-->
+                        <!--<groupId>org.springframework</groupId>-->
+                        <!--<artifactId>springloaded</artifactId>-->
+                        <!--<version>1.2.6.RELEASE</version>-->
+                    <!--</dependency>-->
+                <!--</dependencies>-->
+			<!--</plugin>-->
+
+		  <!-- 跳过Test类 -->
+	      <plugin>
+	        <groupId>org.apache.maven.plugins</groupId>
+	        <artifactId>maven-surefire-plugin</artifactId>
+	        <configuration>
+	          <skipTests>true</skipTests>
+	        </configuration>
+	      </plugin>
+	      
+	      <!-- 资源文件拷贝插件 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<configuration>
+					<encoding>UTF-8</encoding>
+					<!-- 过滤后缀为pkcs12、jks的证书文件 -->
+					<nonFilteredFileExtensions>
+						<nonFilteredFileExtension>pkcs12</nonFilteredFileExtension>
+						<nonFilteredFileExtension>jks</nonFilteredFileExtension>
+					</nonFilteredFileExtensions>
+				</configuration>
+			</plugin>
+
+
+			<!-- java编译插件 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+			<!-- 自定义maven打包 把可执行jar与依赖包分开打lib -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>lib/</classpathPrefix>
+							<mainClass>com.ra.open.Open</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy</id>
+						<phase>install</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/lib</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+
+</project>

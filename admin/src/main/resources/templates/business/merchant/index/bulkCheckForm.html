@@ -1,0 +1,78 @@
+<div th:replace="commons/header::html" ></div>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+            </fieldset>
+
+        </div>
+        <div class="layui-card-body">
+            <form class="layui-form" action="javascript:void(0);">
+                <div class="layui-form-item" style="margin-top:20px;" th:if="${!openPayPassword}">
+                    <div class="layui-form-mid layui-word-aux">请绑定支付密码</div>
+                </div>
+                <div class="layui-form-item" style="margin-top:20px;" th:if="${openGoogleAuthenticator}">
+                    <label class="layui-form-label">二次验证:</label>
+                    <div class="layui-input-inline" >
+                        <input type="number" name="fastGoogleAuthenticator" id="fastGoogleAuthenticator" value="" placeholder="请输入谷歌二次验证随机码"  autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">您已开启了谷歌二次验证</div>
+                </div>
+                <div class="layui-form-item" style="margin-top:20px;" th:if="${openPayPassword}">
+                    <label class="layui-form-label">支付密码:</label>
+                    <div class="layui-input-inline" >
+                        <input type="password" name="fastPayPassword" id="fastPayPassword" placeholder="请输入支付密码"  value="" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">您已开启支付密码</div>
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-input-block" th:if="${openPayPassword}">
+                        <button class="layui-btn" id="formSubmit" lay-submit lay-filter="formSubmit">立即提交</button>
+                        <a href="javascript:close();" class="layui-btn layui-btn-primary">关闭</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    layui.use(['layer','form','transfer'], function () {
+        var layer = layui.layer;
+        var form=layui.form;
+        var $=layui.$;
+        var transfer=layui.transfer;
+
+        form.on("submit(formSubmit)",function(obj){
+            console.log(obj);
+            $("#formSubmit").attr({"disabled":"disabled"});
+            $.post('/private/merchantIndex/bulkTextCheck',obj.field,function(data){
+                    if(data.code==1){
+                        layer.msg("校验成功")
+                      var index=parent.layer.open({
+                            type: 2,
+                            title: '文本导入',
+                            content: '/private/merchantIndex/bulkTextFile'
+                            , offset: 'auto'
+                            , area: ['550px', '600px']
+                        });
+                        parent.layer.full(index);
+                        close();
+                    }else{
+                        layer.msg(data.msg)
+                    }
+                    $("#formSubmit").removeAttr("disabled");
+            });
+            return false;
+        });
+    });
+    function close(){
+        var index = parent.layer.getFrameIndex(window.name);
+        parent.layer.close(index);
+    }
+</script>
+</body>
+<div th:replace="commons/footer" ></div>

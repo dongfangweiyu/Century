@@ -1,0 +1,64 @@
+<div th:replace="commons/header::html" ></div>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+
+        </div>
+        <div class="layui-card-body">
+            <div class="layui-form">
+                <table class="layui-table">
+                    <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>接口名称</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody id="content">
+                        <tr th:each="item,stat : ${list}">
+                            <td th:text="${stat.index+1}"></td>
+                            <td th:text="${item.title}"></td>
+                            <td>
+                                <a  th:href="${'/private/interface/config?interfaceEnum='+item.name()}" class="layui-btn layui-btn-danger layui-btn-xs config">
+                                    <i class="layui-icon">&#xe716;</i>配置
+                                </a>
+
+                                <a  th:data="${item.name()}" class="layui-btn layui-btn-danger layui-btn-xs test">
+                                    <i class="layui-icon">&#xe63d;</i>测试一下
+                                </a>
+
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    layui.use(['layer'], function () {
+        var layer = layui.layer;
+        var $ = layui.$;
+
+        $(function () {
+
+            //配置测试
+            $(".test").click(function(){
+                var name = $(this).attr("data");
+                layer.open({
+                    type: 2,
+                    title:'测试接口',
+                    content: '/private/interface/test?interfaceEnum='+name
+                    ,offset: 'auto'
+                    ,shadeClose:true
+                    ,area: ['700px', '700px']
+                });
+            });
+        });
+    });
+
+
+</script>
+</body>
+<div th:replace="commons/footer" ></div>

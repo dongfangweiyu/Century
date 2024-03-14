@@ -1,0 +1,207 @@
+<div th:replace="commons/header::html" ></div>
+
+<body>
+
+  <div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+      <div class="layui-col-md12">
+        <div class="layui-card">
+          <div class="layui-card-header">网站设置</div>
+          <div class="layui-card-body" pad15>
+            
+            <form class="layui-form" wid100 lay-filter="" method="post" action="/private/config/" >
+              <div class="layui-form-item">
+                <label class="layui-form-label">代收通道开关</label>
+                <div class="layui-input-block">
+                  <input type="hidden" th:value="${SYSTEM_CREATEORDER}" id="switchCreateOrder" name="SYSTEM_CREATEORDER"/>
+                  <input type="checkbox" th:checked="${SYSTEM_CREATEORDER}" lay-skin="switch" lay-filter="switchChannel" lay-text="开|关">
+                </div>
+              </div>
+
+              <div class="layui-form-item">
+                <label class="layui-form-label">代付通道开关</label>
+                <div class="layui-input-block">
+                  <input type="hidden" th:value="${SYSTEM_CREATEBEHALFORDER}" id="switchCreateBehalfOrder" name="SYSTEM_CREATEBEHALFORDER"/>
+                  <input type="checkbox" th:checked="${SYSTEM_CREATEBEHALFORDER}" lay-skin="switch" lay-filter="switchBehalfChannel" lay-text="开|关">
+                </div>
+              </div>
+
+              <div class="layui-form-item">
+                <label class="layui-form-label">演示DEMO</label>
+                <div class="layui-input-inline">
+                  <input type="hidden" th:value="${SYSTEM_DEMO}" id="switchDemo" name="SYSTEM_DEMO"/>
+                  <input type="checkbox" th:checked="${SYSTEM_DEMO}" lay-skin="switch" lay-filter="switchDemo" lay-text="开|关">
+                </div>
+                <div class="layui-form-mid layui-word-aux">http://open.xx.com</div>
+              </div>
+
+              <div class="layui-form-item">
+                <label class="layui-form-label">提现手续费</label>
+                <div class="layui-input-inline">
+                  <input type="number" name="WITHDRAW_RATE" th:value="${WITHDRAW_RATE}" placeholder="请输入单笔提现手续费，列如： 5元 " min="0" max="10" class="layui-input">
+                </div>
+                <div class="layui-form-mid layui-word-aux">单笔提现手续费（元）</div>
+              </div>
+
+              <div class="layui-form-item">
+                <label class="layui-form-label">订单号前缀</label>
+                <div class="layui-input-block">
+                  <input type="text" name="ORDER_PREFIX" th:value="${ORDER_PREFIX}" placeholder="请输入订单号前缀，列如： RA  ZFB  WX" maxlength="5" class="layui-input">
+                </div>
+              </div>
+              <div class="layui-form-item">
+                <label class="layui-form-label">网站名称</label>
+                <div class="layui-input-block">
+                  <input type="text" name="SYSTEM_WEBNAME" th:value="${SYSTEM_WEBNAME}" placeholder="请输入网站名称" class="layui-input">
+                </div>
+              </div>
+              <div class="layui-form-item">
+                <label class="layui-form-label">网站域名</label>
+                <div class="layui-input-block">
+                  <input type="text" name="SYSTEM_WEBDOMAIN" lay-verify="url" th:value="${SYSTEM_WEBDOMAIN}" placeholder="请输入网站域名" class="layui-input">
+                </div>
+              </div>
+              <!--<div class="layui-form-item">-->
+                <!--<label class="layui-form-label">缓存时间</label>-->
+                <!--<div class="layui-input-inline" style="width: 80px;">-->
+                  <!--<input type="text" name="cache" lay-verify="number" value="0" class="layui-input">-->
+                <!--</div>-->
+                <!--<div class="layui-input-inline layui-input-company">分钟</div>-->
+                <!--<div class="layui-form-mid layui-word-aux">本地开发一般推荐设置为 0，线上环境建议设置为 10。</div>-->
+              <!--</div>-->
+              <!--<div class="layui-form-item">-->
+                <!--<label class="layui-form-label">最大文件上传</label>-->
+                <!--<div class="layui-input-inline" style="width: 80px;">-->
+                  <!--<input type="text" name="cache" lay-verify="number" value="2048" class="layui-input">-->
+                <!--</div>-->
+                <!--<div class="layui-input-inline layui-input-company">KB</div>-->
+                <!--<div class="layui-form-mid layui-word-aux">提示：1 M = 1024 KB</div>-->
+              <!--</div>-->
+              <!--<div class="layui-form-item">-->
+                <!--<label class="layui-form-label">上传文件类型</label>-->
+                <!--<div class="layui-input-block">-->
+                  <!--<input type="text" name="cache" value="png|gif|jpg|jpeg|zip|rar" class="layui-input">-->
+                <!--</div>-->
+              <!--</div>-->
+              <!---->
+              <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">网站标题</label>
+                <div class="layui-input-block">
+                  <textarea name="SYSTEM_WEBTITLE" class="layui-textarea" th:text="${SYSTEM_WEBTITLE}" placeholder="请输入网站标题">layuiAdmin std - 通用后台管理模板系统（iframe标准版）</textarea>
+                </div>
+              </div>
+              <!--<div class="layui-form-item layui-form-text">-->
+                <!--<label class="layui-form-label">META关键词</label>-->
+                <!--<div class="layui-input-block">-->
+                  <!--<textarea name="keywords" class="layui-textarea" placeholder="多个关键词用英文状态 , 号分割"></textarea>-->
+                <!--</div>-->
+              <!--</div>-->
+              <!--<div class="layui-form-item layui-form-text">-->
+                <!--<label class="layui-form-label">META描述</label>-->
+                <!--<div class="layui-input-block">-->
+                  <!--<textarea name="descript" class="layui-textarea">layuiAdmin 是 layui 官方出品的通用型后台模板解决方案，提供了单页版和 iframe 版两种开发模式。layuiAdmin 是目前非常流行的后台模板框架，广泛用于各类管理平台。</textarea>-->
+                <!--</div>-->
+              <!--</div>-->
+              <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">版权信息</label>
+                <div class="layui-input-block">
+                  <textarea name="SYSTEM_WEBCOPYRIGHT" class="layui-textarea" placeholder="请输入版权信息" th:text="${SYSTEM_WEBCOPYRIGHT}">© 2018 layui.com MIT license</textarea>
+                </div>
+              </div>
+              <div class="layui-form-item layui-form-text" th:if="${userId == 1}">
+                <label class="layui-form-label">清除数据</label>
+                <div class="layui-input-block">
+                  <a  th:onclick="'javascript:clearTenData();'"
+                     class="layui-btn layui-btn-danger">清除
+                  </a>
+                </div>
+              </div>
+              <div class="layui-form-item">
+                <div class="layui-input-block">
+                  <button class="layui-btn" lay-submit lay-filter="set_website">确认保存</button>
+                </div>
+              </div>
+            </form>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script th:inline="javascript">
+    var $;
+  layui.use(['layer', 'form'],function(){
+    var form=layui.form;
+     $=layui.$;
+    //监听指定开关
+    form.on('switch(switchChannel)', function(data){
+      // this.checked
+      $("#switchCreateOrder").val(this.checked);
+      layer.tips('温馨提示：关闭后所有商户将无法放单。', data.othis)
+    });
+
+    //监听指定开关
+    form.on('switch(switchBehalfChannel)', function(data){
+      // this.checked
+      $("#switchCreateBehalfOrder").val(this.checked);
+      layer.tips('温馨提示：关闭后所有商户将无法创建代付订单。', data.othis)
+    });
+
+    //监听指定开关
+    form.on('switch(switchDemo)', function(data){
+      // this.checked
+      $("#switchDemo").val(this.checked);
+      layer.tips('温馨提示：关闭后演示站点无法访问。', data.othis)
+    });
+
+    form.on('submit(set_website)',function(obj){
+      return true;
+    });
+  });
+
+  //解绑谷歌验证
+  function clearTenData() {
+    layui.use('layer', function () {
+      var layer = layui.layer;
+      layer.open({
+        type: 0,
+        title: '是否清除数十天前数据',//自定义标题样式
+        border: [0],
+        area: ['auto', 'auto'],
+        content: '<span class="orange">确认要清除十天前数据吗？</span>',
+        btn: ['确认', '取消'],
+        yes: function () {
+
+          var loading = layer.load(1, {
+            shade: false
+          });
+
+          $.ajax({
+            type: "post",
+            url: "/private/config/clearTenDaysData",
+            dataType: "json",
+            data: {
+            },
+            success: function (result) {
+              layer.close(loading);
+              if (result.code == 1) {
+                layer.alert("清除成功", "1", function () {
+                  location.reload();
+                });
+              } else if (result.code == -1) {
+                layer.alert("清除失败");
+              }
+
+            }
+          });
+        },
+        no: function () {
+          layer.close(index);
+        }
+      });
+    });
+  }
+  </script>
+</body>
+<div th:replace="commons/footer" ></div>

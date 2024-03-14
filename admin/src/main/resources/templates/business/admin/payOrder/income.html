@@ -1,0 +1,83 @@
+<div th:replace="commons/header::html" ></div>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <fieldset class="layui-elem-field layui-field-title">
+                <legend th:if="${payOrder.status.toString() eq 'PROCESS'}">待支付</legend>
+                <legend th:if="${payOrder.status.toString() eq 'SUCCESS'}">支付成功</legend>
+                <legend th:if="${payOrder.status.toString() eq 'FAIL'}">支付失败</legend>
+            </fieldset>
+        </div>
+        <div class="layui-card-body">
+            <form class="layui-form">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">订单号</label>
+                    <div class="layui-input-block">
+                        <input th:value="${payOrder.orderNo}" class="layui-input" readonly required lay-verify="required"/>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">订单金额</label>
+                    <div class="layui-input-block">
+                        <input th:value="${payOrder.amount}" class="layui-input" readonly required lay-verify="required"/>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">商户收入</label>
+                    <div class="layui-input-inline">
+                        <input th:value="${payOrder.amount*(1-rate.merchantRate)+' 元'}" class="layui-input" readonly required lay-verify="required"/>
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">费率：<B th:text="${rate.merchantRate*100+'%'}"></B></div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">代理收入</label>
+                    <div class="layui-input-inline">
+                        <input th:value="${payOrder.amount*(rate.merchantRate-rate.proxyRate)+' 元'}" class="layui-input" readonly required lay-verify="required"/>
+                    </div>
+                    <div class="layui-form-mid layui-word-aux" >费率：<B th:text="${(rate.merchantRate-rate.proxyRate)*100+'%'}"></B></div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">通道扣除</label>
+                    <div class="layui-input-inline">
+                        <input th:value="${payOrder.amount*payChannel.rate+' 元'}" class="layui-input" readonly required lay-verify="required"/>
+                    </div>
+                    <div class="layui-form-mid layui-word-aux" >第三方收取的费率：<B th:text="${payChannel.rate*100+'%'}"></B></div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">平台收入</label>
+                    <div class="layui-input-inline">
+                        <input th:value="${payOrder.amount*(rate.proxyRate-payChannel.rate)+' 元'}" class="layui-input" readonly required lay-verify="required"/>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <a href="javascript:close();" class="layui-btn layui-btn-primary">关闭</a>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    layui.use(['layer','form'], function () {
+        var layer = layui.layer;
+        var $ = layui.$;
+        var form = layui.form;
+
+    });
+    function close(){
+        var index = parent.layer.getFrameIndex(window.name);
+        parent.layer.close(index);
+    }
+</script>
+</body>
+<div th:replace="commons/footer" ></div>

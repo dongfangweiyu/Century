@@ -1,0 +1,97 @@
+<div th:replace="commons/header::html" ></div>
+<script th:src="@{/static/js/jquery.js}" type="text/javascript" charset="utf-8"></script>
+<script th:src="@{/static/js/jquery.qrcode.min.js}" type="text/javascript" charset="utf-8"></script>
+
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <fieldset th:if="${open}" class="layui-elem-field layui-field-title">
+                <legend>已成功绑定</legend>
+            </fieldset>
+
+            <fieldset th:if="${!open}" class="layui-elem-field layui-field-title">
+                <legend>绑定二次验证</legend>
+            </fieldset>
+        </div>
+        <div class="layui-card-body">
+            <ul class="layui-timeline" th:if="${!open}">
+                <li class="layui-timeline-item">
+                    <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                    <div class="layui-timeline-content layui-text">
+                        <h3 class="layui-timeline-title">第一步</h3>
+                        <p>
+                            请下载APP谷歌身份验证器GoogleAuthenticator。
+                        </p>
+                    </div>
+                </li>
+                <li class="layui-timeline-item">
+                    <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                    <div class="layui-timeline-content layui-text">
+                        <h3 class="layui-timeline-title">第二步（二选一）</h3>
+                        <p>扫描以下二维码 或 手动绑定秘钥</p>
+                        <ul>
+                            <li>二维码：<div id="qrcode"></div></li>
+                            <li>秘钥：<span th:text="${session.secret}" class="layui-bg-red"></span></li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="layui-timeline-item">
+                    <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                    <div class="layui-timeline-content layui-text">
+                        <h3 class="layui-timeline-title">第三步</h3>
+                        <p>
+                            APP扫码绑定后,请备份保存该二维码以免丢失
+                        </p>
+
+                        <form class="layui-form" method="post" action="">
+                            <input type="hidden" name="secret" th:value="${session.secret}"/>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">验证秘钥</label>
+                                <div class="layui-input-inline">
+                                    <input type="number" name="validateCode" required  class="layui-input" minlength="6" maxlength="6" placeholder="请输入6位谷歌验证码" />
+                                </div>
+                            </div>
+
+                            <div class="layui-form-item">
+                                <div class="layui-input-block">
+                                    <input type="submit" value="确认开启" class="layui-btn">
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+                </li>
+                <li class="layui-timeline-item">
+                    <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                    <div class="layui-timeline-content layui-text">
+                        <div class="layui-timeline-title">搞定</div>
+                    </div>
+                </li>
+            </ul>
+
+        </div>
+    </div>
+</div>
+
+    <script th:inline="javascript">
+        var content=[[${qrcode}]];
+        layui.use(['form','layer'], function () {
+            var layer = layui.layer;
+            var form=layui.form;
+
+            $("#qrcode").qrcode({
+                render: "canvas", // 渲染方式有table方式（IE兼容）和canvas方式
+                width: 180, //宽度
+                height: 180, //高度
+                text: content, //内容
+                typeNumber: -1,//计算模式
+                correctLevel: 2,//二维码纠错级别
+                background: "#ffffff",//背景颜色
+                foreground: "#000000",  //二维码颜色
+            });
+        });
+    </script>
+
+</body>
+<div th:replace="commons/footer" ></div>

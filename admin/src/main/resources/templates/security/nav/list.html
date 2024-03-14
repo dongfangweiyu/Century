@@ -1,0 +1,133 @@
+<div th:replace="commons/header::html" ></div>
+
+<body>
+
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <blockquote class="layui-elem-quote layui-row">
+                <h3>管理员-角色菜单设置</h3>
+            </blockquote>
+
+        </div>
+        <div class="layui-card-body">
+            <div class="layui-form">
+                <table class="layui-table admin-table" lay-size="sm">
+                    <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>角色名称</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody id="content">
+                    <tr th:each="item : ${roles}">
+                        <td th:text="${item.id}"></td>
+                        <td th:text="${item.name}"></td>
+                        <td>
+                            <a th:href="@{'/private/nav/navigation?agencyEnum=ADMIN&roleId=' + ${item.id}}" class="layui-btn layui-btn-xs"><i
+                                    class="layui-icon">&#xe642;</i>菜单设置</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <blockquote class="layui-elem-quote layui-row">
+                <h3>机构-权限菜单设置</h3>
+            </blockquote>
+
+        </div>
+        <div class="layui-card-body">
+            <div class="layui-form">
+                <table class="layui-table admin-table" lay-size="sm">
+                    <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>机构</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td th:text="'1'"></td>
+                        <td th:text="'商户'"></td>
+                        <td>
+                            <a th:href="@{'/private/nav/navigation?agencyEnum=MERCHANT' }" class="layui-btn layui-btn-xs"><i
+                                    class="layui-icon">&#xe642;</i>菜单设置</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td th:text="'2'"></td>
+                        <td th:text="'业务员(代理)'"></td>
+                        <td>
+                            <a th:href="@{'/private/nav/navigation?agencyEnum=PROXY' }" class="layui-btn layui-btn-xs"><i
+                                    class="layui-icon">&#xe642;</i>菜单设置</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td th:text="'3'"></td>
+                        <td th:text="'卡商'"></td>
+                        <td>
+                            <a th:href="@{'/private/nav/navigation?agencyEnum=BEHALF' }" class="layui-btn layui-btn-xs"><i
+                                    class="layui-icon">&#xe642;</i>菜单设置</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+    <script th:inline="javascript">
+        function update(id, status) {
+            layui.use('layer', function () {
+                var layer = layui.layer;
+                layer.open({
+                    type: 0,
+                    title: '禁用/启用',//自定义标题样式
+                    border: [0],
+                    content: '<span class="orange">确定更新该角色吗？</span>',
+                    btn: ['禁用/启用', '取消'],
+                    yes: function () {
+                        $.ajax({
+                            type: "post",
+                            url: "/private/nav/status",
+                            dataType: "json",
+                            data: {
+                                "id": id,
+                                "status": (status == 0) ? 1 : 0
+                            },
+                            success: function (result) {
+                                if (result.code == 1) {
+                                    layer.alert("更新成功", "1", function () {
+                                        window.parent.location.reload();
+                                    });
+                                } else if (result.code == -1) {
+                                    layer.alert("更新失败");
+                                }
+
+                            }
+                        });
+                    },
+                    no: function () {
+                        layer.close(index);
+                    }
+                });
+            });
+        }
+    </script>
+</body>
+<div th:replace="commons/footer" ></div>

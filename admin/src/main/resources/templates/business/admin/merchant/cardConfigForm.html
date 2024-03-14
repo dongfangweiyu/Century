@@ -1,0 +1,126 @@
+<div th:replace="commons/header::html" ></div>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                <legend th:if="${_method eq 'PUT'}">配置卡组</legend>
+            </fieldset>
+
+        </div>
+        <div class="layui-card-body">
+            <form th:method="${_method }" class="layui-form">
+                <input type="hidden" name="_method" th:value="${_method}"/>
+                <input type="hidden" name="userId" th:value="${userId}"/>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">配置卡组</label>
+                    <div class="layui-input-block">
+                        <div class="layui-collapse" lay-accordion="">
+                            <div class="layui-colla-item" th:each="item,st:${cardGroupBeanList}">
+                                <h2 class="layui-colla-title" th:text="${item.behalfName}"></h2>
+                                <div th:class="'layui-colla-content '+${st.index==0?'layui-show':''}">
+                                    <table class="layui-table">
+                                        <thead>
+                                            <tr>
+                                                <th>卡组名称</th>
+                                                <th>卡商费率</th>
+                                                <th>卡商单笔</th>
+                                                <th>商户费率 %</th>
+                                                <th>商户单笔 </th>
+                                                <th>代理费率 %</th>
+                                                <th>代理单笔 </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="rateVo,stat:${item.cardGroupRateVoList}" th:data-index="${rateVo.index}" lay-filter="proxyPayChannel">
+                                                <td>
+                                                    <input type="hidden" th:name="${'cardGroupRateVoList['+rateVo.index+'].id'}" th:value="${rateVo.id}" class="layui-input" />
+                                                    <input type="hidden" th:name="${'cardGroupRateVoList['+rateVo.index+'].bankCardGroupId'}" th:value="${rateVo.bankCardGroupId}" class="layui-input" />
+                                                    <input type="checkbox" th:name="${'cardGroupRateVoList['+rateVo.index+'].checked'}" lay-skin="primary" th:title="${rateVo.cardGroupName}" th:checked="${rateVo.checked}" />
+                                                    <input type="hidden" th:name="${'cardGroupRateVoList['+rateVo.index+'].cardGroupName'}" th:value="${rateVo.cardGroupName}" readonly  class="layui-input"/>
+                                                </td>
+                                                <td th:text="${rateVo.behalfRate+'%'}"></td>
+                                                <td th:text="${rateVo.behalfFee}"></td>
+                                                <td><input type="number" th:name="${'cardGroupRateVoList['+rateVo.index+'].merchantRate'}" th:required="${rateVo.checked}" th:disabled="${rateVo.checked?'false':'disabled'}" th:style="${rateVo.checked?'':'background:grey;'}" min="0" max="100" step="0.01"  th:value="${rateVo.merchantRate}" class="layui-input"/>
+                                                </td>
+                                                <td>
+                                                    <input type="number" th:name="${'cardGroupRateVoList['+rateVo.index+'].merchantFee'}" th:required="${rateVo.checked}" th:disabled="${rateVo.checked?'false':'disabled'}" th:style="${rateVo.checked?'':'background:grey;'}" th:min="0" max="100" step="0.01"  th:value="${rateVo.merchantFee}" class="layui-input"/>
+                                                </td>
+                                                <td><input type="number" th:name="${'cardGroupRateVoList['+rateVo.index+'].proxyRate'}" th:required="${rateVo.checked}" th:disabled="${rateVo.checked?'false':'disabled'}" th:style="${rateVo.checked?'':'background:grey;'}" th:min="${rateVo.behalfRate}" max="${rateVo.merchantRate}" step="0.01"  th:value="${rateVo.proxyRate}" class="layui-input"/>
+                                                </td>
+                                                <td><input type="number" th:name="${'cardGroupRateVoList['+rateVo.index+'].proxyFee'}" th:required="${rateVo.checked}" th:disabled="${rateVo.checked?'false':'disabled'}" th:style="${rateVo.checked?'':'background:grey;'}" th:min="${rateVo.behalfFee}" max="${rateVo.merchantFee}" step="0.01"  th:value="${rateVo.proxyFee}" class="layui-input"/>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <input type="submit" value="保存" lay-submit lay-filter="addMerchant" class="layui-btn" />
+                        <!--<button type="button" onclick="location.href='/private/merchant/findListMerchant'"-->
+                                <!--class="layui-btn layui-btn-primary">返回-->
+                        <!--</button>-->
+                        <button type="button" onclick="window.history.back();"
+                                class="layui-btn layui-btn-primary">返回
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    layui.use(['layer','form','transfer','element'], function () {
+        var layer = layui.layer;
+        var form=layui.form;
+        var $=layui.$;
+        var element=layui.element;
+
+
+        form.on('checkbox',function(data){
+            console.log(data.elem.checked); //是否被选中，true或者false
+            var isChecked=data.elem.checked;
+            var index=$(this).parent().parent().attr('data-index');
+            if(isChecked){
+                $("input[name='cardGroupRateVoList["+index+"].merchantRate']").css("background","white");
+                $("input[name='cardGroupRateVoList["+index+"].merchantRate']").attr("disabled",false);
+                $("input[name='cardGroupRateVoList["+index+"].merchantRate']").attr('required','true');
+                $("input[name='cardGroupRateVoList["+index+"].merchantFee']").css("background","white");
+                $("input[name='cardGroupRateVoList["+index+"].merchantFee']").attr("disabled",false);
+                $("input[name='cardGroupRateVoList["+index+"].merchantFee']").attr('required','true');
+                $("input[name='cardGroupRateVoList["+index+"].proxyRate']").css("background","white");
+                $("input[name='cardGroupRateVoList["+index+"].proxyRate']").attr("disabled",false);
+                $("input[name='cardGroupRateVoList["+index+"].proxyRate']").attr('required','true');
+                $("input[name='cardGroupRateVoList["+index+"].proxyFee']").css("background","white");
+                $("input[name='cardGroupRateVoList["+index+"].proxyFee']").attr("disabled",false);
+                $("input[name='cardGroupRateVoList["+index+"].proxyFee']").attr('required','true');
+            }else{
+                $("input[name='cardGroupRateVoList["+index+"].merchantRate']").css("background","grey");
+                $("input[name='cardGroupRateVoList["+index+"].merchantRate']").attr("disabled","disabled");
+                $("input[name='cardGroupRateVoList["+index+"].merchantRate']").removeAttr('required');
+                $("input[name='cardGroupRateVoList["+index+"].merchantFee']").css("background","grey");
+                $("input[name='cardGroupRateVoList["+index+"].merchantFee']").attr("disabled","disabled");
+                $("input[name='cardGroupRateVoList["+index+"].merchantFee']").removeAttr('required');
+                $("input[name='cardGroupRateVoList["+index+"].proxyRate']").css("background","grey");
+                $("input[name='cardGroupRateVoList["+index+"].proxyRate']").attr("disabled","disabled");
+                $("input[name='cardGroupRateVoList["+index+"].proxyRate']").removeAttr('required');
+                $("input[name='cardGroupRateVoList["+index+"].proxyFee']").css("background","grey");
+                $("input[name='cardGroupRateVoList["+index+"].proxyFee']").attr("disabled","disabled");
+                $("input[name='cardGroupRateVoList["+index+"].proxyFee']").removeAttr('required');
+            }
+        });
+
+    });
+
+</script>
+</body>
+<div th:replace="commons/footer" ></div>

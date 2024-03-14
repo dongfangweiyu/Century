@@ -1,0 +1,104 @@
+<div th:replace="commons/header::html" ></div>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <form id="totalForm" class="layui-form layui-form-pane" th:action="@{/private/behalfIndex/findBehalfInfoIndex}"
+                  th:method="GET">
+                <div class="layui-row layui-col-space15">
+                    <div class="layui-col-md3">
+                        <div class="layui-card">
+                            <div class="layui-card-header">代付可用额度</div>
+                            <div class="layui-card-body">
+                                <span style="font-size: 30px;font-weight: bold;" th:text="${wallet.money}"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md3">
+                        <div class="layui-card">
+                            <div class="layui-card-header">下发费率</div>
+                            <div class="layui-card-body">
+                                <span style="font-size: 14px;font-weight: bold;" th:text="${behalfInfo.behalfRate}"></span> %
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md3">
+                        <div class="layui-card">
+                            <div class="layui-card-header">单笔收费</div>
+                            <div class="layui-card-body">
+                                <span style="font-size: 14px;font-weight: bold;" th:text="${behalfInfo.behalfFee}"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md3">
+                        <div class="layui-card">
+                            <div class="layui-card-header">总收益</div>
+                            <div class="layui-card-body">
+                                <span style="font-size: 14px;font-weight: bold;" th:text="${incomeLogTotal}"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-row layui-col-space15">
+                    <div class="layui-col-md3">
+                        <div class="layui-card">
+                            <div class="layui-card-header">卡商（编号）APPID</div>
+                            <div class="layui-card-body">
+                                <span style="font-size: 14px;font-weight: bold;" th:text="${behalfInfo.appId}"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md3">
+                        <div class="layui-card">
+                            <div class="layui-card-header">卡商秘钥</div>
+                            <div class="layui-card-body">
+                                <a class="layui-btn layui-btn-sm" onclick="javascript:showSecret();">查看秘钥</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md3">
+                        <div class="layui-card">
+                            <div class="layui-card-header">绑定自动代付确认IP</div>
+                            <div class="layui-card-body">
+                                <!--<span style="font-size: 14px;font-weight: bold;" th:text="${merchantInfo.secret}"></span>-->
+                                <a class="layui-btn layui-btn-sm behalfIp" ><i class="layui-icon">&#xe642;</i>绑定IP</a>
+                            </div>
+                        </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script th:inline="javascript">
+    var $;
+    layui.use(['form', 'layedit', 'laydate', 'laypage','layer'], function () {
+        var layer=layui.layer;
+        $=layui.$;
+
+        $(function () {
+            //风控
+            $(".behalfIp").click(function () {
+                layer.open({
+                    type: 2,
+                    title: '绑定IP',
+                    content: '/private/behalfIndex/editBehalfIp'
+                    , offset: 'auto'
+                    , area: ['750px', '400px']
+                });
+            });
+        });
+
+
+    });
+
+    function showSecret(){
+        layer.open({
+            title: '卡商秘钥'
+            ,content: [[${behalfInfo.secret}]]
+        });
+    }
+
+</script>
+
+</body>
+<div th:replace="commons/footer" ></div>

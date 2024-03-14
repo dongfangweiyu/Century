@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+	
+ <!-- 这是ysgj的父模块 -->
+  <groupId>com.ra</groupId>
+  <artifactId>ra</artifactId>
+  <packaging>pom</packaging>
+  <version>2.0</version>
+
+ <!-- 子模块列表 -->
+  <modules>
+    <module>common</module>
+    <module>dao</module>
+    <module>service</module>
+    <module>admin</module>
+    <module>open</module>
+  </modules>
+
+	<!-- Spring boot 父引用-->
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.0.7.RELEASE</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	
+  <name>Century</name>
+  <!-- FIXME change it to the project's website -->
+  <url>http://www.example.com</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+  </properties>
+
+  <dependencies>
+  		<!-- spring boot 核心 -->
+    	<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+		</dependency>
+		
+		<!-- junit单元测试 -->
+		<dependency>
+	      <groupId>org.springframework.boot</groupId>
+	      <artifactId>spring-boot-starter-test</artifactId>
+	      <scope>test</scope>
+	      <exclusions>
+				<exclusion>
+					<groupId>com.vaadin.external.google</groupId>
+					<artifactId>android-json</artifactId>
+				</exclusion>
+			</exclusions>
+	    </dependency>
+	    <dependency>
+	      <groupId>org.springframework</groupId>
+	      <artifactId>spring-test</artifactId>
+	    </dependency>
+	    <dependency>
+	      <groupId>junit</groupId>
+	      <artifactId>junit</artifactId>
+	    </dependency>
+		
+		<!-- 支持热部署 -->
+    	<dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-devtools</artifactId>
+        <optional>true</optional>
+        </dependency>
+        
+		<!-- 引入Web模块 -->
+		<dependency>
+        	<groupId>org.springframework.boot</groupId>
+        	<artifactId>spring-boot-starter-web</artifactId>
+ 		</dependency>
+ 		
+ 	<!-- 添加MySQL依赖 -->
+		<dependency>  
+		  <groupId>org.springframework.boot</groupId>  
+		  <artifactId>spring-boot-starter-data-jpa</artifactId>  
+		</dependency>  
+		
+		<dependency>  
+		  <groupId>mysql</groupId>  
+		  <artifactId>mysql-connector-java</artifactId>
+		</dependency>
+	
+	<!-- 添加redis依赖 -->
+	<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+		
+	<!-- 引入阿里巴巴fastjson解析工具 -->
+	<dependency>
+	    <groupId>com.alibaba</groupId>
+	    <artifactId>fastjson</artifactId>
+	    <version>1.2.47</version>
+	</dependency>
+
+	  <!--引入lombok 自动生成getter,setter-->
+	  <dependency>
+		  <groupId>org.projectlombok</groupId>
+		  <artifactId>lombok</artifactId>
+		  <scope>provided</scope>
+	  </dependency>
+
+	  <!-- 引入 thymeleaf 模板 引擎 -->
+	  <dependency>
+		  <groupId>org.springframework.boot</groupId>
+		  <artifactId>spring-boot-starter-thymeleaf</artifactId>
+	  </dependency>
+
+	  <!-- 让 thymeleaf 不严格校验 html5 -->
+	  <dependency>
+		  <groupId>net.sourceforge.nekohtml</groupId>
+		  <artifactId>nekohtml</artifactId>
+		  <version>1.9.22</version>
+	  </dependency>
+		
+  </dependencies>
+</project>

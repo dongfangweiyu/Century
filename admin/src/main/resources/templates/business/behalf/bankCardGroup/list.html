@@ -1,0 +1,70 @@
+<div th:replace="commons/header::html" ></div>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <blockquote class="layui-elem-quote layui-row">
+                <a href="javascript:void(0);"  class="layui-btn" id="add">添加卡组</a>
+            </blockquote>
+        </div>
+        <div class="layui-card-body">
+            <div class="layui-form">
+                <table class="layui-table">
+                    <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>卡组名称</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody id="content">
+                        <tr th:each="item,stat : ${list}">
+                            <td th:text="${stat.index+1}"></td>
+                            <td th:text="${item.cardGroupName}"></td>
+                            <td>
+                                <b th:if="${!item.enable}">禁用</b>
+                                <b th:if="${item.enable}">启用</b>
+                            </td>
+                            <td>
+                                <a  th:href="${'/private/bankCardGroup/configCard?id='+item.id}" class="layui-btn layui-btn-danger layui-btn-xs config">
+                                    <i class="layui-icon">&#xe716;</i>添加银行卡
+                                </a>
+
+                                <a th:href="@{'/private/bankCardGroup/enable?id=' + ${item.id}}" class="layui-btn layui-btn-xs">
+                                    <span th:if="${!item.enable}"><i class="layui-icon">ဂ</i>启用</span>
+                                    <span th:if="${item.enable}"><i class="layui-icon">ဂ</i>禁用</span>
+                                </a>
+
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    layui.use(['layer'], function () {
+        var layer = layui.layer;
+        var $ = layui.$;
+
+        $(function () {
+            //添加配置
+            $("#add").click(function(){
+                layer.open({
+                    type: 2,
+                    title:'添加卡组',
+                    content: '/private/bankCardGroup/addCardGroup'
+                    ,offset: 'auto'
+                    ,area: ['650px', '350px']
+                });
+            });
+
+        });
+    });
+
+
+</script>
+</body>
+<div th:replace="commons/footer" ></div>

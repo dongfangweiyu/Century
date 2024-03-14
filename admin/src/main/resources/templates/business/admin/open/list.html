@@ -1,0 +1,145 @@
+<div th:replace="commons/header::html" ></div>
+<body>
+<div class="layui-fluid">
+
+
+
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <form id="totalForm" class="layui-form layui-form-pane" th:action="@{/private/openManager/findListOpenManager}"
+                  th:method="GET">
+                <input type="hidden" id="size" th:value="${pager.size}" name="size">
+                <input type="hidden" id="page" th:value="${pager.page}" name="page">
+                <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                    <legend>条件筛选</legend>
+                </fieldset>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">状态</label>
+                        <div class="layui-input-inline">
+                            <select name="applyStatus">
+                                <option value="">全部</option>
+                                <option value="INAUDIT" th:selected="${openAccountReq.applyStatus == 'INAUDIT'}">审核中</option>
+                                <option value="PASS" th:selected="${openAccountReq.applyStatus == 'PASS'}">审核通过</option>
+                                <option value="NOTPASS" th:selected="${openAccountReq.applyStatus == 'NOTPASS'}">审核不通过</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <label class="layui-form-label">日期</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="beginTime" name="beginTime"
+                                   th:value="${openAccountReq.beginTime}"
+                                   placeholder="起始时间" autocomplete="off" class="layui-input" />
+                        </div>
+                        <div class="layui-form-mid">-</div>
+                        <div class="layui-input-inline">
+                            <input type="text" id="endTime" name="endTime"
+                                   th:value="${openAccountReq.endTime}"
+                                   placeholder="结束时间" autocomplete="off" class="layui-input" />
+                        </div>
+                    </div>
+
+
+                    <div class="layui-inline">
+                        <label class="layui-form-label">商户账号</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="queryParam" placeholder="请输入商户账号查询" th:value="${openAccountReq.queryParam}"
+                                   autocomplete="off" class="layui-input"/></div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">代理账号</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="proxyAccount" placeholder="请输入代理账号查询" th:value="${openAccountReq.proxyAccount}"
+                                   autocomplete="off" class="layui-input"/></div>
+                    </div>
+                    <div class="layui-inline">
+                        <input type="submit"  lay-submit  lay-filter="submitBtn" value="搜索" class="layui-btn" />
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="layui-card-body">
+            <table class="layui-table">
+                <thead>
+                <tr>
+                    <th>申请人</th>
+                    <th>申请商户账号</th>
+                    <th>申请商户名称</th>
+                    <th>申请时间</th>
+                    <th>申请状态</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody id="content">
+                <tr id="app-tr-${item.id}" th:each="item : ${listByCondition.content}">
+                    <!--<td th:text="${item.id}"></td>-->
+                    <td th:text="${item.proxyAccount}"></td>
+                    <td th:text="${item.merchantAccount}"></td>
+                    <td th:text="${item.companyName}"></td>
+                    <td th:text="${#dates.format(item.createTime, 'yyyy-MM-dd HH:mm')}"></td>
+                    <td th:switch="${item.applyStatus != null}">
+                        <span th:case="${item.applyStatus == 'INAUDIT'}">审核中</span>
+                        <span th:case="${item.applyStatus == 'PASS'}">通过</span>
+                        <span th:case="${item.applyStatus == 'NOTPASS'}">不通过</span>
+                    </td>
+                    <td>
+                        <a th:href="@{'/private/openManager/seeInfo?id=' + ${item.merchantUserId}}"
+                           class="layui-btn layui-btn-xs">查看</a>
+                    </td>
+                </tr>
+                </tbody>
+                <tfoot id="footer_page">
+
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    var $;
+    layui.use(['form', 'layedit', 'laydate', 'laypage'], function () {
+        var laydate = layui.laydate;
+        var laypage = layui.laypage;
+        var form = layui.form;
+        $=layui.$;
+
+        laydate.render({
+            elem: '#beginTime'
+            ,type: 'datetime'
+        });
+        laydate.render({
+            elem: '#endTime'
+            ,type: 'datetime'
+        });
+        laypage.render({
+            elem: 'footer_page',
+            count: [[${listByCondition.getTotalElements()}]],
+            limit: 10,
+            layout: ['count', 'prev', 'page', 'next', 'skip'],
+            curr: [[${pager.page}]],
+            jump: function(obj, first){
+                if (!first) {
+                    $("#page").val(obj.curr);
+                    $("#size").val(obj.limit);
+                    $("#totalForm").submit();
+                }
+            }
+        });
+
+        //监听提交
+        form.on('submit(submitBtn)', function(data){
+            $("#page").val(1);
+            $("#totalForm").submit();
+        });
+    });
+
+    function  returnMethod() {
+        window.location.href = '/private/openManager/findListOpenManager';
+    }
+</script>
+
+</body>
+<div th:replace="commons/footer" ></div>

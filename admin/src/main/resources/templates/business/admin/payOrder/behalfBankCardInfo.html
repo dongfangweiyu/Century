@@ -1,0 +1,73 @@
+<div th:replace="commons/header::html" ></div>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <fieldset class="layui-elem-field layui-field-title">
+<!--                <legend th:if="${payOrder.status.toString() eq 'PROCESS'}">待支付</legend>-->
+<!--                <legend th:if="${payOrder.status.toString() eq 'SUCCESS'}">支付成功</legend>-->
+<!--                <legend th:if="${payOrder.status.toString() eq 'FAIL'}">支付失败</legend>-->
+            </fieldset>
+        </div>
+        <div class="layui-card-body">
+            <form class="layui-form">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">所属卡商</label>
+                    <div class="layui-input-block">
+                        <input th:value="${user.account}" class="layui-input" readonly required lay-verify="required"/>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">银行名称</label>
+                    <div class="layui-input-block">
+                        <input th:value="${bankCardResp.bankName}" class="layui-input" readonly required lay-verify="required"/>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">银行卡号</label>
+                    <div class="layui-input-block">
+                        <input th:value="${bankCardResp.bankNo}" class="layui-input" readonly required lay-verify="required"/>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">持卡人姓名</label>
+                    <div class="layui-input-block">
+                        <input th:value="${bankCardResp.realName}" class="layui-input" readonly required lay-verify="required"/>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">支行信息</label>
+                    <div class="layui-input-block">
+                        <input th:value="${bankCardResp.bankBranch}" class="layui-input" readonly required lay-verify="required"/>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <a href="javascript:close();" class="layui-btn layui-btn-primary">关闭</a>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    layui.use(['layer','form'], function () {
+        var layer = layui.layer;
+        var $ = layui.$;
+        var form = layui.form;
+
+    });
+    function close(){
+        var index = parent.layer.getFrameIndex(window.name);
+        parent.layer.close(index);
+    }
+</script>
+</body>
+<div th:replace="commons/footer" ></div>

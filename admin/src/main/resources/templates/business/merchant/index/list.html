@@ -1,0 +1,244 @@
+<div th:replace="commons/header::html" ></div>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <form id="totalForm" class="layui-form layui-form-pane" th:action="@{/private/merchantIndex/findMerchantInfoIndex}"
+                  th:method="GET">
+                <div class="layui-row layui-col-space15">
+                    <div class="layui-col-md3">
+                        <div class="layui-card">
+                            <div class="layui-card-header">账户余额</div>
+                            <div class="layui-card-body">
+                                <span style="font-size: 30px;font-weight: bold;" th:text="${wallet.money}"></span>
+                                <a  class="layui-btn layui-btn-danger  withdraw" style="margin-left: 20px;"><i class="layui-icon"></i>提现</a>
+<!--                                <a   onclick="javascript:toWithdrawal(this);"  th:attr="data-money=${wallet.money}" class="layui-btn layui-btn-sm" style="margin-left: 70px;">-->
+<!--                                    <i class="layui-icon">&#xe65e;</i>提现</a>-->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md3">
+                        <div class="layui-card">
+                            <div class="layui-card-header">商户（编号）APPID</div>
+                            <div class="layui-card-body">
+                                <span style="font-size: 14px;font-weight: bold;" th:text="${merchantInfo.appId}"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md3">
+                        <div class="layui-card">
+                            <div class="layui-card-header">商户秘钥</div>
+                            <div class="layui-card-body">
+                                <!--<span style="font-size: 14px;font-weight: bold;" th:text="${merchantInfo.secret}"></span>-->
+                               <!-- <a th:data="${merchantInfo.secret}" class="layui-btn layui-btn-sm showSecret">查看秘钥</a>-->
+                                <a class="layui-btn layui-btn-sm" onclick="javascript:showSecret();">查看秘钥</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md3">
+                        <div class="layui-card">
+                            <div class="layui-card-header">代收费率</div>
+                            <div class="layui-card-body">
+                                <!--<span style="font-size: 14px;font-weight: bold;" th:text="${merchantInfo.secret}"></span>-->
+                                <a th:href="@{'/private/merchantIndex/findMerchentRate?userId=' + ${merchantInfo.userId}}"
+                                   class="layui-btn layui-btn-sm"><i class="layui-icon">&#xe642;</i>查看费率</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-row layui-col-space15">
+                    <div class="layui-col-md3">
+                        <div class="layui-card">
+                            <div class="layui-card-header">手动发起代付订单</div>
+                            <div class="layui-card-body">
+                                <a  class="layui-btn layui-btn-danger  manualBehalf"><i class="layui-icon"></i>代付</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md3">
+                        <div class="layui-card">
+                            <div class="layui-card-header">批量发起代付订单</div>
+                            <div class="layui-card-body">
+                                <a  class="layui-btn layui-btn-danger  batchBehalf" ><i class="layui-icon"></i>批量代付</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md3">
+                        <div class="layui-card">
+                            <div class="layui-card-header">手动发起代付充值订单</div>
+                            <div class="layui-card-body">
+                                <a  class="layui-btn layui-btn-danger  manualPay" ><i class="layui-icon"></i>充值</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md3">
+                        <div class="layui-card">
+                        <div class="layui-card-header">代付费率</div>
+                        <div class="layui-card-body">
+                            <!--<span style="font-size: 14px;font-weight: bold;" th:text="${merchantInfo.secret}"></span>-->
+                            <a th:href="@{'/private/merchantIndex/findMerchentBehalfRate?userId=' + ${merchantInfo.userId}}"
+                               class="layui-btn layui-btn-sm"><i class="layui-icon">&#xe642;</i>查看费率</a>
+                        </div>
+                    </div>
+                </div>
+                </div>
+                <div class="layui-row layui-col-space15">
+                    <div class="layui-col-md3">
+                        <div class="layui-card">
+                            <div class="layui-card-header">绑定代付下单IP</div>
+                            <div class="layui-card-body">
+                                <!--<span style="font-size: 14px;font-weight: bold;" th:text="${merchantInfo.secret}"></span>-->
+                                <a class="layui-btn layui-btn-sm behalfIp" ><i class="layui-icon">&#xe642;</i>绑定IP</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md3">
+                        <div class="layui-card">
+                            <div class="layui-card-header">文本导入校验</div>
+                            <div class="layui-card-body">
+                                <a  class="layui-btn layui-btn-danger  bulkTextCheck"><i class="layui-icon"></i>导入校验</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script th:inline="javascript">
+    var $;
+    layui.use(['form', 'layedit', 'laydate', 'laypage','layer','upload'], function () {
+        var layer=layui.layer;
+        $=layui.$;
+        var upload = layui.upload;
+
+        /*upload.render({
+            elem: '.uploadBatchBehalf',
+            url: '/private/merchantIndex/upload',
+            accept: 'file',
+            contentType: false,
+            processData: false,
+            data: FormData,
+            before: function () {
+                falg = true;
+            },
+            done: function (result) {
+                falg=false;
+                if (result.code == 1) {
+                    var textPath=result.data.path;
+                    if(textPath==undefined||textPath.length<=0){
+                        layer.msg("批量文本上传失败");
+                        return;
+                    }
+                    $.post('/private/merchantIndex/bulkText',{'textPath':textPath},function(data){
+                        if(data.code==1){
+                            layer.msg(data.msg);
+                            window.location.reload();
+                        }else{
+                            layer.msg(data.msg);
+                        }
+                    });
+                } else {
+                    layer.msg(result.msg);
+                }
+            },
+            error: function () {
+                falg = false;
+                layer.msg("上传异常, 请重新上传。")
+
+            }
+        });*/
+        $(function () {
+            //风控
+            $(".withdraw").click(function () {
+                layer.open({
+                    type: 2,
+                    title: '提现',
+                    content: '/private/merchantIndex/withdraw'
+                    , offset: 'auto'
+                    , area: ['650px', '600px']
+                });
+            });
+        });
+        $(function () {
+            //代付手动单笔下单
+            $(".manualBehalf").click(function () {
+                layer.open({
+                    type: 2,
+                    title: '手动下代付订单',
+                    content: '/private/merchantIndex/manualBehalf'
+                    , offset: 'auto'
+                    , area: ['850px', '800px']
+                });
+            });
+        });
+        $(function () {
+            //批量手动下代付订单
+            $(".batchBehalf").click(function () {
+                layer.open({
+                    type: 2,
+                    title: '手动批量下代付订单',
+                    content: '/private/merchantIndex/batchBehalf'
+                    , offset: 'auto'
+                    , area: ['1600px', '950px']
+                });
+            });
+        });
+        $(function () {
+            //风控
+            $(".manualPay").click(function () {
+                layer.open({
+                    type: 2,
+                    title: '手动下代付充值订单',
+                    content: '/private/merchantIndex/manualPay'
+                    , offset: 'auto'
+                    , area: ['650px', '500px']
+                });
+            });
+        });
+        $(function () {
+            //风控
+            $(".behalfIp").click(function () {
+                layer.open({
+                    type: 2,
+                    title: '绑定IP',
+                    content: '/private/merchantIndex/editBehalfIp'
+                    , offset: 'auto'
+                    , area: ['750px', '400px']
+                });
+            });
+        });
+
+        $(function () {
+            //文本导入校验
+            $(".bulkTextCheck").click(function () {
+                layer.open({
+                    type: 2,
+                    title: '文本导入校验',
+                    content: '/private/merchantIndex/bulkTextCheck'
+                    , offset: 'auto'
+                    , area: ['650px', '400px']
+                });
+            });
+        });
+        /*$(function () {
+            var secret = $(this).attr("data");
+            $(".showSecret").click(function () {
+                layer.open({
+                    title: '商户秘钥'
+                    ,content: secret
+                });
+            });
+        });*/
+    });
+
+    function showSecret(){
+        layer.open({
+            title: '商户秘钥'
+            ,content: [[${merchantInfo.secret}]]
+        });
+    }
+</script>
+
+</body>
+<div th:replace="commons/footer" ></div>

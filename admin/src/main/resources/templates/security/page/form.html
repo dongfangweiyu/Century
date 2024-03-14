@@ -1,0 +1,84 @@
+<div th:replace="commons/header::html" ></div>
+
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                <legend th:if="${_method eq 'POST'}">添加页面</legend>
+                <legend th:unless="${_method eq 'PUT'}">修改页面</legend>
+            </fieldset>
+        </div>
+        <div class="layui-card-body">
+            <form commandName="page" th:method="${_method}" class="layui-form">
+                <input type="hidden" name="_method" th:value="${_method}"/>
+                <input type="hidden" name="id" th:value="${page.id}"/>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">页面名称</label>
+                    <div class="layui-input-block">
+                        <input th:value="${page.name}" name="name" required class="layui-input" placeholder="页面名称" />
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">相对地址</label>
+                    <div class="layui-input-block">
+                        <input name="href" th:value="${page.href}" required class="layui-input" placeholder="页面相对地址" />
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <input type="button" value="保存" class="layui-btn" id="save">
+                        <div style="display: none"><input type="submit" value="保存" class="layui-btn" id="submit"></div>
+                        <button type="button" onclick="location.href='JavaScript:history.go(-1);'" class="layui-btn layui-btn-primary">取消</button>
+                    </div>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    layui.use(['layer','form'], function () {
+        var layer = layui.layer;
+        var $=layui.$;
+        var form=layui.form;
+
+        $(function () {
+            $("#save").click(function () {
+                var result = [];
+                $(".paramsKey").each(function (index, item) {
+                    var id = $(this).attr("data");
+                    var key = $(item).val();
+
+                    var items = "";
+                    items += key + ":" + $(".paramsValue-" + id).val();
+
+
+                    result.push(items);
+                });
+
+                $("#params-hidden").attr("value", result.join(";"));
+
+                $("#submit").click();
+            });
+
+            $("#addParams").click(function () {
+                var id = Math.floor(Math.random() * 10000);
+                $("#params").append("<div class='layui-block' style='margin-left: 60px; margin-bottom: 10px; line-height:  36px;' id='params-" + id + "'><label class='layui-form-label'>权限名:</label><input type='text' name='' autocomplete='off' class='layui-input paramsKey' data='" + id + "' style='width: 100px; display: inline-block; float: left;'><label class='layui-form-label'>权限值:</label><input type='text' name='' autocomplete='off' class='layui-input paramsValue-" + id + "'  style='width: 100px; display: inline-block; float: left;'><a href='javascript:void(0);'  class='layui-btn layui-btn-mini layui-btn-danger subject-params' data='params-" + id + "' style='margin-left: 10px;'><i class='layui-icon'>&#xe640;</i></a></div>");
+            });
+
+            $(document).on("click", ".subject-params", function () {
+                var id = $(this).attr("data");
+                $("#" + id).remove();
+            });
+        });
+
+    });
+</script>
+</body>
+<div th:replace="commons/footer" ></div>

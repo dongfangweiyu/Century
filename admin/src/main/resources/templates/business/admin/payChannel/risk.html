@@ -1,0 +1,118 @@
+<div th:replace="commons/header::html" ></div>
+<body>
+<!-- 风控管理 -->
+<div class="layui-fluid">
+    <form class="layui-form" action="javascript:void(0);">
+        <input type="hidden" th:value="${bean.id}" name="id"/>
+        <div class="layui-card">
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">风控开关</label>
+                    <div class="layui-input-block">
+                        <input type="checkbox" th:checked="${bean.risk}" lay-filter="risk" lay-skin="switch" lay-text="开启|关闭">
+                        <input type="hidden" name="risk" th:value="${bean.risk}" />
+                    </div>
+                </div>
+            </div>
+            <div class="layui-card-body" id="cardBody" th:style="${bean.risk?'':'display:none;'}" >
+                <div class="layui-form-item">
+                    <label class="layui-form-label">信誉分</label>
+                    <div class="layui-input-inline">
+                        <input type="number" name="creditScore"  lay-verify="required" th:value="${bean.creditScore}"
+                               placeholder="请输入信誉分" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">限制累计放多少金额单</div>
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">交易时间</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="beginTime" name="beginTime"  th:value="${bean.beginTime}"
+                                   placeholder="起始时间" autocomplete="off" class="layui-input" />
+                        </div>
+                        <div class="layui-form-mid">-</div>
+                        <div class="layui-input-inline">
+                            <input type="text" id="endTime" name="endTime"  th:value="${bean.endTime}"
+                                   placeholder="结束时间" autocomplete="off" class="layui-input" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">订单金额</label>
+                        <div class="layui-input-inline">
+                            <input type="number"  name="minAmount" min="100" max="10000"  th:value="${bean.minAmount}"
+                                   placeholder="订单最小金额" autocomplete="off" class="layui-input" />
+                        </div>
+                        <div class="layui-form-mid">-</div>
+                        <div class="layui-input-inline">
+                            <input type="number" name="maxAmount" min="10000" max="100000"  th:value="${bean.maxAmount}"
+                                   placeholder="订单最大金额" autocomplete="off" class="layui-input" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-card">
+                <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <button class="layui-btn" lay-submit lay-filter="formSubmit">立即提交</button>
+                            <a href="javascript:close();" class="layui-btn layui-btn-primary">关闭</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    layui.use(['layer','laydate','form'], function () {
+        var layer = layui.layer;
+        var form=layui.form;
+        var $ = layui.$;
+        var laydate=layui.laydate;
+
+        laydate.render({
+            elem: '#beginTime'
+            ,type: 'time'
+        });
+        laydate.render({
+            elem: '#endTime'
+            ,type: 'time'
+        });
+
+        form.on('switch(risk)',function(data){
+            $("input[name='risk']").val(this.checked);
+            if(this.checked){
+                $("#cardBody").show();
+            }else{
+                $("#cardBody").hide();
+            }
+            layer.tips('温馨提示：开启后按下面的配置进行风控，关闭则不风控', data.othis)
+        });
+
+
+       form.on("submit(formSubmit)",function(obj){
+            console.log(obj);
+            $.post('/private/payChannel/risk',obj.field,function(data){
+                layer.alert(data.msg,function(index){
+                    layer.close(index);
+                    if(data.code==1){
+                        parent.location.reload();
+                    }
+                });
+            });
+            return false;
+       });
+    });
+
+
+    function close(){
+        var index = parent.layer.getFrameIndex(window.name);
+        parent.layer.close(index);
+    }
+</script>
+</body>
+<div th:replace="commons/footer" ></div>

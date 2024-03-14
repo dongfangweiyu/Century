@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" th:href="@{/static/images/icon.ico}" type="image/x-icon" />
+    <title>用户管理</title>
+    <object th:replace="commons/header :: headerTop"></object>
+</head>
+
+<body>
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+        <legend th:switch="${_method}">
+            <p th:case="'POST'">
+                <span th:if="${nav.id!=null}"> 修改菜单</span>
+                <span th:if="${nav.id==null&&nav.parentId==null}"> 添加顶级菜单</span>
+                <span th:if="${nav.id==null&&nav.parentId!=null}"> 添加二级菜单</span>
+            </p>
+        </legend>
+    </fieldset>
+
+
+    <div>
+        <div class="layui-row layui-col-space20">
+            <div class="layui-col-md5">
+                <form th:method="${_method}" id="navForm" class="layui-form">
+                    <input type="hidden" name="_method" th:value="${_method}"/>
+                    <input type="hidden" id="id" name="id" th:value="${nav.id}"/>
+                    <input type="hidden" name="roleId" th:value="${nav.roleId}"/>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">名称</label>
+                        <div class="layui-input-block">
+                            <input th:value="${nav.title}" class="layui-input" name="title" placeholder="菜单名称"
+                                 />
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item" >
+                        <label class="layui-form-label">所属角色</label>
+                        <div class="layui-input-block">
+                            <input th:value="${nav.roleName}" class="layui-input" readonly="true" name="roleName"
+                                   />
+                        </div>
+                    </div>
+                    <div class="layui-form-item" th:if="${nav.parentId != null}">
+                        <label class="layui-form-label">上级菜单ID</label>
+                        <div class="layui-input-block">
+                            <input class="layui-input" readonly="true"  name="parentId" th:value="${nav.parentId}" />
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">图标</label>
+                        <div class="layui-input-block">
+                            <input th:value="${nav.icon}" class="layui-input" name="icon" placeholder="菜单图标"
+                                   />
+                            <a href="http://www.layui.com/doc/element/icon.html#table" target="_blank">选取图标</a>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">是否展开</label>
+                        <div class="layui-input-block">
+                            <input type="radio" name="spread" th:value="${nav.spread}" title="是"
+                                   th:checked="${nav.spread == true}" />
+                            <input type="radio" name="spread" th:value="${nav.spread}" title="否"
+                                   th:checked="${nav.spread == false}" />
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">排序</label>
+                        <div class="layui-input-block">
+                            <input th:value="${nav.rank}" name="rank" class="layui-input" placeholder="排序，从大到小排序"
+                                   />
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">页面指向</label>
+                        <div class="layui-input-block">
+                            <a href="javascript:void(0)" id="page" class="layui-btn layui-btn-normal layui-btn-sm">
+                                指定页面</a>
+                            <table class="layui-table admin-table" lay-size="sm" >
+                                <thead>
+                                <tr>
+                                    <th>页面名称</th>
+                                    <th>页面地址</th>
+                                    <th>操作</th>
+                                </tr>
+                                </thead>
+                                <tbody id="content">
+                                    <tr th:id="'tr' + ${nav.page.id}" th:if="${nav.page != null}">
+                                        <td th:text="${nav.page.name}"></td>
+                                        <td th:text="${nav.page.href}"></td>
+                                        <td><a href="#" th:onclick="'javascript:remove(\''+${nav.id}+'\');'">
+                                            删除</a></td>
+                                        <input type='hidden' name='pageId' th:value='${nav.page.id}' class='teacher'/>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <a class="layui-btn " id="save"><i class="layui-icon">&#xe63c;</i> 保存</a>
+                            <a class="layui-btn  layui-btn-danger" id="remove"><i class="layui-icon">&#xe640;</i> 删除</a>
+                            <a onclick="window.parent.location.reload();" class="layui-btn  layui-btn-primary"><i class="layui-icon">&#xe603;</i> 返回</a>
+                            <div style="display: none"><input type="submit" value="保存" class="layui-btn layui-btn-sm" id="submit"></div>
+                        </div>
+                    </div>
+
+                </form>
+
+
+            </div>
+        </div>
+
+    </div>
+    <script type="text/html" id="barDemo">
+        <a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="allot">指定</a>
+    </script>
+
+    <script th:inline="javascript">
+        layui.use(['form', 'layedit', 'laydate'], function () {
+            var layer = layui.layer;
+        });
+
+        function closeRoute() {
+            layui.use('layer', function () {
+                var layer = layui.layer;
+                layer.closeAll();
+            });
+        }
+
+        function showAuthority(id) {
+            $.ajax({
+                url: "/private/nav/permission?id=" + id,
+                type: "GET",
+                dataType: "json",
+                success: function (result) {
+                    if(result.status) {
+                        var html = "";
+                        $.each(result.result, function (index, item) {
+                            html = html + "<input type='checkbox' class='authbox' name='id' value='" + item.id + ":" + item.permission + "' title='" + item.name + "' />";
+                        });
+                        $("#permissionArea").html(html);
+
+                        layui.use('form', function(){
+                            var form = layui.form; //只有执行了这一步，部分表单元素才会自动修饰成功
+                            form.render();
+                        });
+                    }
+                }
+
+            });
+        }
+
+        //删除指定页面操作
+        function remove(id) {
+            layui.use('layer', function () {
+                var layer = layui.layer;
+                layer.open({
+                    type: 0,
+                    title: '删除菜单',//自定义标题样式
+                    border: [0],
+                    content: '<span class="orange">确定删除该指定页面吗？</span>',
+                    btn: ['删除', '取消'],
+                    yes: function () {
+                        $.ajax({
+                            type: "post",
+                            url: "/private/nav/deleteRoute",
+                            dataType: "json",
+                            data: {
+                                "id": id,
+                            },
+                            success: function (data) {
+                                layer.alert("删除成功", "1", function () {
+                                    window.parent.location.reload();
+                                });
+                            }
+                        });
+                    },
+                    no: function () {
+                        layer.close(index);
+                    }
+                });
+            });
+        }
+
+
+
+        $(function () {
+
+
+            //删除操作
+            $("#remove").click(function () {
+                var id = $("#id").val();
+                console.log("id == " + id);
+                layui.use('layer', function () {
+                    var layer = layui.layer;
+                    layer.open({
+                        type: 0,
+                        title: '删除菜单',//自定义标题样式
+                        border: [0],
+                        content: '<span class="orange">确定删除该菜单吗？</span>',
+                        btn: ['删除', '取消'],
+                        yes: function () {
+                            $.ajax({
+                                type: "delete",
+                                url: "/private/nav/remove?id="+id,
+                                success: function (data) {
+                                    layer.alert("删除成功", "1", function () {
+                                        window.parent.location.reload();
+                                    });
+                                }
+                            });
+                        },
+                        no: function () {
+                            layer.close(index);
+                        }
+                    });
+                });
+            });
+
+            $("#save").click(function () {
+
+                var authority = [];
+                $("input[type='checkbox']:checked").each(function (index, item) {
+                    authority.push($(item).val());
+                });
+
+                $("#authority").attr("value", authority.join("-"));
+
+                $("#navForm").ajaxSubmit({
+                    success: function (result) {
+                        if (result.code == 1) {
+                            layer.alert("保存成功");
+                            window.parent.location.reload();
+                        }
+                    }
+                })
+            });
+
+            $(document).on('click', '.feijin-remove', function () {
+                var index = $(this).attr("data-id");
+                $("#tr" + index).remove();
+                $("input[name='path.id']").remove();
+
+            });
+
+    //            $("#path").click(function () {
+    //                $("#allotTeachArea").show();
+    //                search();
+    //            });
+
+            $("#page").click(function () {
+
+                layui.use('layer', function () {
+                    var layer = layui.layer;
+                    layer.open({
+                        type: 2,
+                        title: '指定菜单点击访问的页面',
+                        border: [0],
+                        area: ['630px', '90%'],
+                        content: '/private/nav/route'
+                    });
+                });
+
+            });
+
+        });
+    </script>
+</body>
+</html>

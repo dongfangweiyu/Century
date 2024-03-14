@@ -1,0 +1,85 @@
+<div th:replace="commons/header::html" ></div>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <blockquote class="layui-elem-quote layui-row">
+                <a th:href="@{/private/card/add}" class="layui-btn" id="add">添加银行</a>
+            </blockquote>
+
+        </div>
+        <div class="layui-card-body">
+            <div class="layui-form">
+                <table class="layui-table">
+                    <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>银行名称</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody id="content">
+                        <tr th:id="'app-tr-' + ${item.id}" th:each="item : ${list}">
+                            <td th:text="${item.id}"></td>
+                            <td th:text="${item.bankName}"></td>
+                            <td>
+                                <a th:data="${item.id}"
+                                   class="layui-btn layui-btn-danger layui-btn-xs feijin-remove"><i
+                                        class="layui-icon">&#xe640;</i>删除</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+    layui.use(['layer'], function () {
+        var layer = layui.layer;
+        var $ = layui.$;
+
+        $(function () {
+            //删除操作
+            $(".feijin-remove").click(function () {
+                var id = $(this).attr("data");
+                layui.use('layer', function () {
+                    var layer = layui.layer;
+                    layer.open({
+                        type: 0,
+                        title: '删除角色',//自定义标题样式
+                        border: [0],
+                        content: '<span class="orange">删除操作，确定删除该银行卡吗？</span>',
+                        btn: ['删除', '取消'],
+                        yes: function () {
+                            $.ajax({
+                                type: "post",
+                                url: "/private/card/del",
+                                data: {
+                                    "id": id,
+                                },
+                                success: function (data) {
+                                    if (data.code == 1) {
+                                        layer.alert("删除成功", "1", function () {
+                                            location.reload();
+                                        });
+                                    } else if (data.code == -1) {
+                                        layer.alert("删除失败");
+                                    }
+                                }
+                            });
+                        },
+                        no: function () {
+                            layer.close(index);
+                        }
+                    });
+                });
+            });
+        });
+    });
+
+
+</script>
+</body>
+<div th:replace="commons/footer" ></div>

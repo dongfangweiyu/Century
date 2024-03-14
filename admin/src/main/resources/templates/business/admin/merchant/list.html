@@ -1,0 +1,292 @@
+<div th:replace="commons/header::html" ></div>
+<body>
+<div class="layui-fluid">
+
+
+
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <blockquote class="layui-elem-quote layui-row">
+                <a th:href="@{/private/merchant/add}" class="layui-btn" id="add">添加商户</a>
+            </blockquote>
+            <form id="totalForm" class="layui-form layui-form-pane" th:action="@{/private/merchant/findListMerchant}"
+                  th:method="GET">
+                <input type="hidden" id="size" th:value="${pager.size}" name="size">
+                <input type="hidden" id="page" th:value="${pager.page}" name="page">
+                <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                    <legend>条件筛选</legend>
+                </fieldset>
+                <div class="layui-row layui-col-space15">
+                    <div class="layui-col-md3">
+                        <div class="layui-card">
+                            <div class="layui-card-body">总钱包金额</div>
+                            <div class="layui-card-header">
+                                <span style="font-size: 30px;font-weight: bold;" th:text="${merchantTotal.totalBalance}"></span>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">日期</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="beginTime" name="beginTime"
+                                   th:value="${merchantQueryReq.beginTime}"
+                                   placeholder="起始时间" autocomplete="off" class="layui-input" />
+                        </div>
+                        <div class="layui-form-mid">-</div>
+                        <div class="layui-input-inline">
+                            <input type="text" id="endTime" name="endTime"
+                                   th:value="${merchantQueryReq.endTime}"
+                                   placeholder="结束时间" autocomplete="off" class="layui-input" />
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <label class="layui-form-label">状态</label>
+                        <div class="layui-input-inline">
+                            <select name="status">
+                                <option value="">全部</option>
+                                <option value="0" th:selected="${merchantQueryReq.status == 0}">正常</option>
+                                <option value="1" th:selected="${merchantQueryReq.status == 1}">禁用</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">商户账号</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="queryParam" placeholder="请输入商户账号查询" th:value="${merchantQueryReq.queryParam}"
+                                   autocomplete="off" class="layui-input"/></div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">代理账号</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="proxyAccount" placeholder="请输入代理账号查询" th:value="${merchantQueryReq.proxyAccount}"
+                                   autocomplete="off" class="layui-input"/></div>
+                    </div>
+                    <div class="layui-inline">
+                        <input type="submit"  lay-submit  lay-filter="submitBtn" value="搜索" class="layui-btn" />
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="layui-card-body">
+            <table class="layui-table">
+                <thead>
+                <tr>
+                    <th>商户账号</th>
+                    <th>商户名称</th>
+                    <th>可提余额</th>
+                    <th>代理账号</th>
+                    <th>创建时间</th>
+                    <th>最后登录时间</th>
+                    <th>登录IP</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody id="content">
+                <tr id="app-tr-${item.id}" th:each="item : ${listByCondition.content}">
+                    <!--<td th:text="${item.id}"></td>-->
+                    <td th:text="${item.merchantAccount}"></td>
+                    <td th:text="${item.companyName}"></td>
+                    <td th:text="${item.walletMoney}"></td>
+                    <td th:text="${item.proxyAccount}"></td>
+                    <td th:text="${T(com.ra.common.utils.DateUtil).converToShowTime(item.createTime)}"></td>
+                    <td th:text="${T(com.ra.common.utils.DateUtil).converToShowTime(item.lastLoginTime)}"></td>
+                    <td th:text="${item.loginIp}"></td>
+                    <td th:switch="${item.status != null}">
+                        <span th:case="${item.status == 0}">正常</span>
+                        <span th:case="${item.status == 1}">禁用</span>
+                    </td>
+                    <td>
+                        <a th:href="@{'/private/merchant/edit?userId=' + ${item.userId}}"
+                           class="layui-btn layui-btn-xs"><i class="layui-icon">&#xe642;</i>编辑</a>
+
+                       <a th:href="@{'/private/merchant/enable?id=' + ${item.userId}}" class="layui-btn layui-btn-xs">
+                            <span th:if="${item.status == 0}"><i class="layui-icon">ဂ</i>禁用</span>
+                            <span th:if="${item.status == 1}"><i class="layui-icon">ဂ</i>启用</span>
+                        </a>
+                        <a th:href="@{'/private/merchant/findEditMerchant?userId=' + ${item.userId}}"
+                           class="layui-btn layui-btn-xs"><i class="layui-icon">&#xe642;</i>详情</a>
+                        <a  href="#" th:data="${item.userId}"
+                            class="layui-btn layui-btn-primary layui-btn-xs feijin-reset"><i
+                                class="layui-icon">&#x1002;</i> 重置密码</a>
+                        <a th:onclick="'javascript:updateUsergoogle('+${item.userId} +');'"
+                           class="layui-btn layui-btn-danger layui-btn-xs feijin-delete">解绑谷歌验证
+                        </a>
+                        <a  href="#" th:data="${item.userId}"
+                            class="layui-btn layui-btn-primary layui-btn-xs feijinpay-reset"><i
+                                class="layui-icon">&#x1002;</i> 重置支付密码</a>
+                        <a th:href="@{'/private/merchant/editBehalfCard?userId=' + ${item.userId}}"
+                           class="layui-btn layui-btn-xs"><i class="layui-icon">&#xe642;</i>配置卡组</a>
+                    </td>
+                </tr>
+                </tbody>
+                <tfoot id="footer_page">
+
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    var $;
+    layui.use(['form', 'layedit', 'laydate', 'laypage'], function () {
+        var laydate = layui.laydate;
+        var laypage = layui.laypage;
+        var form = layui.form;
+        $=layui.$;
+
+        laydate.render({
+            elem: '#beginTime'
+            ,type: 'datetime'
+        });
+        laydate.render({
+            elem: '#endTime'
+            ,type: 'datetime'
+        });
+        laypage.render({
+            elem: 'footer_page',
+            count: [[${listByCondition.getTotalElements()}]],
+            limit: 10,
+            layout: ['count', 'prev', 'page', 'next', 'skip'],
+            curr: [[${pager.page}]],
+            jump: function(obj, first){
+                if (!first) {
+                    $("#page").val(obj.curr);
+                    $("#size").val(obj.limit);
+                    $("#totalForm").submit();
+                }
+            }
+        });
+
+        //监听提交
+        form.on('submit(submitBtn)', function(data){
+            $("#page").val(1);
+            $("#totalForm").submit();
+        });
+
+        $(".feijin-reset").click(function () {
+            var id = $(this).attr("data");
+            layui.use('layer', function () {
+                var layer = layui.layer;
+                layer.open({
+                    type: 0,
+                    title: '重置密码',//自定义标题样式
+                    border: [0],
+                    content: '<span class="orange">确认重置该用户密码？重置后密码为888888</span>',
+                    btn: ['重置密码', '取消'],
+                    yes: function () {
+                        $.ajax({
+                            type: "post",
+                            url: "/private/admin/reset",
+                            dataType: "json",
+                            data: {
+                                "id": id,
+                            },
+                            success: function (data) {
+                                if (data.code == 1) {
+                                    layer.alert("重置密码成功", "1", function () {
+                                        location.reload();
+                                    });
+                                } else if (data.code == -1) {
+                                    layer.alert("重置密码失败！");
+                                }
+                            }
+                        });
+                    },
+                    no: function () {
+                        layer.close(index);
+                    }
+                });
+            });
+        });
+
+        /**
+         * 重置支付密码
+         */
+        $(".feijinpay-reset").click(function () {
+            var id = $(this).attr("data");
+            layui.use('layer', function () {
+                var layer = layui.layer;
+                layer.open({
+                    type: 0,
+                    title: '重置支付密码',//自定义标题样式
+                    border: [0],
+                    content: '<span class="orange">确认重置该用户支付密码？重置后密码为888888</span>',
+                    btn: ['重置支付密码', '取消'],
+                    yes: function () {
+                        $.ajax({
+                            type: "post",
+                            url: "/private/admin/resetPayPassword",
+                            dataType: "json",
+                            data: {
+                                "id": id,
+                            },
+                            success: function (data) {
+                                if (data.code == 1) {
+                                    layer.alert("重置密码成功", "1", function () {
+                                        location.reload();
+                                    });
+                                } else if (data.code == -1) {
+                                    layer.alert("重置密码失败！");
+                                }
+                            }
+                        });
+                    },
+                    no: function () {
+                        layer.close(index);
+                    }
+                });
+            });
+        });
+    });
+
+    function  returnMethod() {
+        window.location.href = '/private/merchant/findListMerchant';
+    }
+    //解绑谷歌验证
+    function updateUsergoogle(id) {
+        layui.use('layer', function () {
+            var layer = layui.layer;
+            layer.open({
+                type: 0,
+                title: '是否解绑该谷歌验证',//自定义标题样式
+                border: [0],
+                area: ['auto', 'auto'],
+                content: '<span class="orange">确认解绑该账户谷歌验证吗？</span>',
+                btn: ['确认', '取消'],
+                yes: function () {
+                    $.ajax({
+                        type: "post",
+                        url: "/private/user/updateUsergoogle",
+                        dataType: "json",
+                        data: {
+                            "id": id
+                        },
+                        success: function (result) {
+                            if (result.code == 1) {
+                                layer.alert("解绑成功", "1", function () {
+                                    location.reload();
+                                });
+                            } else if (result.code == -1) {
+                                layer.alert("解绑失败");
+                            }
+
+                        }
+                    });
+                },
+                no: function () {
+                    layer.close(index);
+                }
+            });
+        });
+    }
+
+</script>
+
+</body>
+<div th:replace="commons/footer" ></div>

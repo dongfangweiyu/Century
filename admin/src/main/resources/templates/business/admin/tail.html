@@ -1,0 +1,89 @@
+<div th:replace="commons/header::html" ></div>
+
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header layuiadmin-card-header-auto">
+                    <fieldset class="layui-elem-field layui-field-title">
+                        <legend>实时日志监控</legend>
+                    </fieldset>
+                    <blockquote class="layui-elem-quote layui-row">
+                            <a href="/private/log?dir=admin" class="layui-btn">查看后台日志</a>
+                        <a href="/private/log?dir=open" class="layui-btn">查看接口日志</a>
+                        <a id="btnClose" class="layui-btn">停止</a>
+                    </blockquote>
+                </div>
+                <div class="layui-card-body" pad15>
+
+                    <div id="log-container" style="height: 650px; overflow-y: scroll; background: #333; color: #aaa; padding: 10px;">
+                        <div id="log-body"></div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    layui.use(['layer'],function(){
+        var $=layui.$;
+        var dir=[[${dir}]];
+        $(document).ready(function() {
+
+            if ('WebSocket' in window) {
+
+            } else {
+                window.alert("浏览器不支持WebSocket");
+                return;
+            }
+
+            var domain = document.domain;
+            var wsServer = location.protocol === 'https:'
+                ? 'ws://'+domain+":8887"+'/log'
+                : 'ws://'+domain+':8887/log';
+            // 指定websocket路径
+            var websocket = new WebSocket(wsServer+"?dir="+dir);
+
+            websocket.onmessage = function(event) {
+                appendContent(event.data);
+            };
+
+            //监听连接关闭
+            websocket.onclose = function (event) {
+                console.log("与服务器断开连接...");
+                appendContent("<br/>掉线了,请刷新页面!");
+                appendContent("<br/>掉线了,请刷新页面!");
+                appendContent("<br/>掉线了,请刷新页面!");
+                appendContent("<br/>掉线了,请刷新页面!");
+                appendContent("<br/>掉线了,请刷新页面!");
+            };
+
+           $("#btnClose").click(function(){
+               if (websocket) {
+                   websocket.close();
+               }
+           });
+
+
+           function appendContent(data){
+
+               var divObj=$("#log-body div");
+               console.log(divObj.length);
+               if(divObj.length>500){
+                   var t="#log-body div:lt("+(divObj.length-500)+")";
+                    $(t).remove();
+               }
+               // 接收服务端的实时日志并添加到HTML页面中
+               $("#log-container #log-body").append("<div>"+data+"</div>");
+               // 滚动条滚动到最低部
+               $("#log-container").scrollTop($("#log-container #log-body").height() - $("#log-container").height()+20);
+           }
+        });
+    });
+</script>
+</body>
+<div th:replace="commons/footer" ></div>

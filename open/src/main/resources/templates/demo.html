@@ -1,0 +1,115 @@
+<div th:replace="commons/header::html" ></div>
+<body >
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+
+        </div>
+        <div class="layui-card-body">
+            <div class="layui-tab">
+                <ul class="layui-tab-title">
+                    <li class="layui-this">代收</li>
+                    <li>代付</li>
+                </ul>
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                        <!--<fieldset class="layui-elem-field layui-field-title" style="text-align: center;">-->
+                            <!--<legend >代收演示</legend>-->
+                        <!--</fieldset>-->
+                        <blockquote class="layui-elem-quote">代收演示</blockquote>
+
+                        <form th:method="post" action="pay" class="layui-form">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">测试金额</label>
+                                <div class="layui-input-block">
+                                    <input type="number" name="amount" class="layui-input" min="0" max="100000" step="0" placeholder="请输入测试金额" required lay-verify="required"/>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">支付类型</label>
+                                <div class="layui-input-block">
+                                    <select name="payCode" id="payCode" lay-filter="payCode" lay-verify="required" required>
+                                        <option th:each="item:${allPayCode}"
+                                                th:value="${item.code}"
+                                                th:text="${item.name}">
+
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="layui-form-item">
+                                <div class="layui-input-block">
+                                    <button class="layui-btn" lay-submit lay-filter="formSubmit">演示</button>
+                                </div>
+                            </div>
+
+                        </form>
+
+                    </div>
+                    <div class="layui-tab-item">
+                        <!--<fieldset class="layui-elem-field layui-field-title" style="text-align: center;">-->
+                            <!--<legend >代付演示</legend>-->
+                        <!--</fieldset>-->
+
+                        <blockquote class="layui-elem-quote">代付演示</blockquote>
+
+                        <form th:method="post" action="behalf" class="layui-form">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">测试金额</label>
+                                <div class="layui-input-block">
+                                    <input type="number" name="amount" class="layui-input" min="0" max="100000" step="0" placeholder="请输入测试金额" required lay-verify="required"/>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">选择银行</label>
+                                <div class="layui-input-block">
+                                    <select name="bankName" id="allBank" lay-filter="allBank" lay-verify="required" required>
+                                        <option th:each="item:${allBank}"
+                                                th:value="${item.bankName}"
+                                                th:text="${item.bankName}">
+
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">银行卡号</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="bankNo" class="layui-input" pattern="[0-9]{15,18}" title="请输入正确的银行卡号" value="123456789987654321" placeholder="请输入银行卡号" required lay-verify="required"/>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">持卡人</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="realName" class="layui-input" pattern=".{2,5}" title="2-5个字符" value="张三" placeholder="请输入持卡人真实姓名" required lay-verify="required"/>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-input-block">
+                                    <button class="layui-btn" lay-submit lay-filter="formSubmit">演示</button>
+                                </div>
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    layui.use(['layer','form','element'], function () {
+        var layer = layui.layer;
+        var $=layui.$;
+        var form=layui.form;
+        var element = layui.element;
+
+
+    });
+
+</script>
+</body>
+<div th:replace="commons/footer" ></div>

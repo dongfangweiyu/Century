@@ -1,0 +1,165 @@
+<div th:replace="commons/header::html" ></div>
+
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <blockquote class="layui-elem-quote layui-row">
+                <a th:href="@{/private/admin/create}" class="layui-btn" id="add">
+                    <i class="layui-icon">&#xe61f;</i> 添加用户</a>
+            </blockquote>
+
+        </div>
+        <div class="layui-card-body">
+            <div class="layui-form">
+                <table class="layui-table admin-table" lay-size="sm">
+                    <thead>
+                    <tr>
+                        <th>用户名</th>
+                        <th>所属角色</th>
+                        <!--<th>下发金额</th>-->
+                        <th>创建时间</th>
+                        <th>最后登录时间</th>
+                        <th>登录IP</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody id="content">
+                    <tr th:id="'app-tr-' + ${item.id}" th:each="item : ${page}">
+                        <td th:text="${item.account}"></td>
+                        <td th:text="${item.roleName}"></td>
+                        <!--<td><B th:text="${item.totalMoney}"></B></td>-->
+                        <td th:text="${T(com.ra.common.utils.DateUtil).converToShowTime(item.createTime)}"></td>
+                        <td th:text="${T(com.ra.common.utils.DateUtil).converToShowTime(item.lastLoginTime)}"></td>
+                        <td th:text="${item.loginIp}"></td>
+                        <td>
+                            <b th:if="${item.status == 1 }">禁用</b>
+                            <b th:if="${item.status ==0 }">启用</b>
+                        </td>
+                        <td th:if="${item.account != 'admin@admin.com'}">
+                            <a  href="#" th:data="${item.id}"
+                               class="layui-btn layui-btn-primary layui-btn-xs feijin-reset"><i
+                                    class="layui-icon">&#x1002;</i> 重置密码</a>
+
+                            <a th:href="@{'/private/admin/edit?id=' + ${item.id}}" class="layui-btn layui-btn-xs"><i
+                                    class="layui-icon">&#xe642;</i>编辑</a>
+
+                            <a th:href="@{'/private/admin/enable?id=' + ${item.id}}" class="layui-btn layui-btn-xs">
+                                <i th:if="${item.status== 1}" class="layui-icon">&#xe642; 启用</i>
+                                <i th:if="${item.status== 0}" class="layui-icon">&#xe642; 禁用</i>
+                            </a>
+
+                            <a href="#" th:data="${item.id}"
+                               class="layui-btn layui-btn-primary layui-btn-xs feijin-remove">
+                                <i class="layui-icon">&#xe640;</i>删除</a>
+
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    layui.use(['layer'], function () {
+        var layer = layui.layer;
+        var $=layui.$;
+
+        $(function () {
+
+            $(".feijin-remove").click(function () {
+                var id = $(this).attr("data");
+                layui.use('layer', function () {
+                    var layer = layui.layer;
+                    layer.open({
+                        type: 0,
+                        title: '删除用户',//自定义标题样式
+                        border: [0],
+                        content: '<span class="orange">确认删除用户</span>',
+                        btn: ['删除', '取消'],
+                        yes: function () {
+                            $.ajax({
+                                type: "post",
+                                url: "/private/admin/remove",
+                                dataType: "json",
+                                data: {
+                                    "id": id,
+                                },
+                                success: function (data) {
+                                    if (data.code == 1) {
+                                        layer.alert("删除成功", "1", function () {
+                                            location.reload();
+                                        });
+                                    } else if (data.code == -1) {
+                                        layer.alert("删除失败！");
+                                    }
+                                }
+                            });
+                        },
+                        no: function () {
+                            layer.close(index);
+                        }
+                    });
+                });
+            });
+
+            $(".feijin-image").click(function () {
+                var src = $(this).attr("data-src");
+                layui.use('layer', function () {
+                    var layer = layui.layer;
+                    layer.open({
+                        title: '头像',
+                        type: 1,
+                        btn: ['关闭'],
+                        content: "<div style='width:100%;height:100%;'><img src='" + src + "' style='width: auto;height: auto;max-width: 100%;max-height: 100%; ' /></div>",
+                        no: function () {
+                            layer.close(index);
+                        }
+                    });
+                });
+            });
+
+            $(".feijin-reset").click(function () {
+                var id = $(this).attr("data");
+                layui.use('layer', function () {
+                    var layer = layui.layer;
+                    layer.open({
+                        type: 0,
+                        title: '重置密码',//自定义标题样式
+                        border: [0],
+                        content: '<span class="orange">确认重置该用户密码？重置后密码为888888</span>',
+                        btn: ['重置密码', '取消'],
+                        yes: function () {
+                            $.ajax({
+                                type: "post",
+                                url: "/private/admin/reset",
+                                dataType: "json",
+                                data: {
+                                    "id": id,
+                                },
+                                success: function (data) {
+                                    if (data.code == 1) {
+                                        layer.alert("重置密码成功", "1", function () {
+                                            location.reload();
+                                        });
+                                    } else if (data.code == -1) {
+                                        layer.alert("重置密码失败！");
+                                    }
+                                }
+                            });
+                        },
+                        no: function () {
+                            layer.close(index);
+                        }
+                    });
+                });
+            });
+        });
+    });
+</script>
+</body>
+<div th:replace="commons/footer" ></div>

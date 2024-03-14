@@ -1,0 +1,21 @@
+<div th:replace="commons/header::html" ></div>
+<script>
+    self.moveTo(0,0);
+    self.resizeTo(screen.availWidth,screen.availHeight);
+</script>
+<style>
+    .tabPages{
+        text-align:center;display:block; border:3px solid #d9d9de; padding:30px; font-size:14px;
+    }
+</style>
+<body onLoad="document.myForm.submit()">
+<div class="layui-fluid">
+    <div id="Content">
+        <div class="tabPages">我们正在为您连接跳转，请稍等......</div>
+    </div>
+    <form name="myForm" th:action="${createOrderUrl}" method="post" >
+        <input type="hidden" th:each="item,stat:${data}" th:name="${stat.current.key}" th:value="${stat.current.value}" />
+    </form>
+</div>
+</body>
+<div th:replace="commons/footer" ></div>

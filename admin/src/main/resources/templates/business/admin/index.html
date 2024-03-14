@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" th:href="@{/static/images/icon.ico}" type="image/x-icon"/>
+    <title>后台首页</title>
+    <object th:replace="commons/header :: headerTop"></object>
+</head>
+
+<body>
+<div style="margin: 15px;">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+        <legend>后台首页</legend>
+    </fieldset>
+
+
+    <div style="padding: 20px; background-color: #F2F2F2;">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md3">
+                <div class="layui-card">
+                    <div class="layui-card-header">
+                        <span th:text="${indexInfo.todayInvestmentCount}"></span>
+                    </div>
+                    <div class="layui-card-body">今日投资人数</div>
+                </div>
+            </div>
+            <div class="layui-col-md3">
+                <div class="layui-card">
+                    <div class="layui-card-header">
+                        <span th:text="${indexInfo.todayRechargeCount}"></span>
+                    </div>
+                    <div class="layui-card-body">今日充值人数</div>
+                </div>
+            </div>
+            <div class="layui-col-md3">
+                <div class="layui-card">
+                    <div class="layui-card-header">
+                        <span th:text="${indexInfo.todayWithdrawCount}"></span>
+                    </div>
+                    <div class="layui-card-body">今日提现人数</div>
+                </div>
+            </div>
+            <div class="layui-col-md3">
+                <div class="layui-card">
+                    <div class="layui-card-header">
+                        <span th:text="${indexInfo.todaySignCount}"></span>
+                    </div>
+                    <div class="layui-card-body">今日签到人数</div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md6">
+                <div class="layui-card">
+                    <div class="layui-card-header">用户总览</div>
+                    <div class="layui-col-md4">
+                        <div class="layui-card">
+                            <div class="layui-card-header">
+                                <span th:text="${indexInfo.userStatisticsVo.todayAdd}"></span>
+                            </div>
+                            <div class="layui-card-body">今日新增</div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md4">
+                        <div class="layui-card">
+                            <div class="layui-card-header">
+                                <span th:text="${indexInfo.userStatisticsVo.monthAdd}"></span>
+                            </div>
+                            <div class="layui-card-body">本月新增</div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md4">
+                        <div class="layui-card">
+                            <div class="layui-card-header">
+                                <span th:text="${indexInfo.userStatisticsVo.memberCount}"></span>
+                            </div>
+                            <div class="layui-card-body">会员总数</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-col-md6">
+                <div class="layui-card">
+                    <div class="layui-card-header">提现申请</div>
+                    <div class="layui-col-md4">
+                        <div class="layui-card">
+                            <div class="layui-card-header">
+                                <span th:text="${indexInfo.withdrawRespVo.unReviewCount}"></span>
+                            </div>
+                            <div class="layui-card-body">未审核</div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md4">
+                        <div class="layui-card">
+                            <div class="layui-card-header">
+                                <span th:text="${indexInfo.withdrawRespVo.unPassCount}"></span>
+                            </div>
+                            <div class="layui-card-body">未通过</div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md4">
+                        <div class="layui-card">
+                            <div class="layui-card-header">
+                                <span th:text="${indexInfo.withdrawRespVo.reviewCount}"></span>
+                            </div>
+                            <div class="layui-card-body">已审核</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md6">
+                <div class="layui-card">
+                    <div class="layui-col-md12">
+                        <div class="layui-card">
+                            <div class="layui-card-header">
+                                累计充值
+                            </div>
+                            <div class="layui-card-body">
+                                <span th:text="${indexInfo.accountInfoVo.sumRecharge}"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md12">
+                        <div class="layui-card">
+                            <div class="layui-card-header">
+                                今日充值成功
+                            </div>
+                            <div class="layui-card-body">
+                                <span th:text="${indexInfo.accountInfoVo.todaySumRecharge}"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md12">
+                        <div class="layui-card">
+                            <div class="layui-card-header">
+                                <span>截止至今日凌晨00：00：00更新</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-col-md6">
+                <div class="layui-card">
+                    <div class="layui-col-md12">
+                        <div class="layui-card">
+                            <div class="layui-card-header">
+                                累计已投资
+                            </div>
+                            <div class="layui-card-body">
+                                <span th:text="${indexInfo.accountInfoVo.sumInvestment}"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md12">
+                        <div class="layui-card">
+                            <div class="layui-card-header">
+                                今日已投资
+                            </div>
+                            <div class="layui-card-body">
+                                <span th:text="${indexInfo.accountInfoVo.todaySumInvestment}"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md12">
+                        <div class="layui-card">
+                            <div class="layui-card-header">
+                                <span>截止至今日凌晨00：00：00更新</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md6">
+                <div class="layui-card">
+                    <div class="layui-col-md12">
+                        <div class="layui-card">
+                            <div class="layui-card-header">
+                                累计提现
+                            </div>
+                            <div class="layui-card-body">
+                                <span th:text="${indexInfo.accountInfoVo.sumWithdraw}"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md12">
+                        <div class="layui-card">
+                            <div class="layui-card-header">
+                                今日提现成功
+                            </div>
+                            <div class="layui-card-body">
+                                <span th:text="${indexInfo.accountInfoVo.todaySumWithdraw}"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md12">
+                        <div class="layui-card">
+                            <div class="layui-card-header">
+                                <span>截止至今日凌晨00：00：00更新</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-col-md6">
+                <div class="layui-card">
+                    <div class="layui-col-md12">
+                        <div class="layui-card">
+                            <div class="layui-card-header">
+                                累计发放宇斯币
+                            </div>
+                            <div class="layui-card-body">
+                                <span th:text="${indexInfo.accountInfoVo.sumEarningsCurrency}"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md12">
+                        <div class="layui-card">
+                            <div class="layui-card-header">
+                                今日发放宇斯币
+                            </div>
+                            <div class="layui-card-body">
+                                <span th:text="${indexInfo.accountInfoVo.todaySumEarningsCurrency}"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md12">
+                        <div class="layui-card">
+                            <div class="layui-card-header">
+                                <span>截止至今日凌晨00：00：00更新</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>

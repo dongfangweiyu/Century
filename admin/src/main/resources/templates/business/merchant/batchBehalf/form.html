@@ -1,0 +1,165 @@
+<div th:replace="commons/header::html" ></div>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                <legend>批量下单-最多批量十条</legend>
+            </fieldset>
+
+        </div>
+        <div class="layui-card-body">
+            <form class="layui-form" action="javascript:void(0);">
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">批量数据</label>
+                    <div class="layui-input-block">
+                        <div class="layui-collapse" lay-accordion="">
+                                    <table class="layui-table">
+                                        <thead>
+                                        <tr class="checkallbox">
+                                            <th><input type="checkbox" lay-filter="allChoose" lay-skin="primary" id="qx" >序号</th>
+                                            <th>持卡人姓名</th>
+                                            <th>开户行</th>
+                                            <th>银行卡号</th>
+                                            <th>支行信息(选填) </th>
+                                            <th>代付金额</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:each="item,stat:${allBatchBehalfData}" th:data-index="${item.index}" class="seach-box"  lay-filter="proxyPayChannel">
+                                            <td>
+                                                <input type="checkbox" th:name="${'allBatchBehalfData['+item.index+'].checked'}" lay-skin="primary" th:title="${item.index}" th:checked="${item.checked}" />
+                                            </td>
+                                            <td><input type="text" th:name="${'allBatchBehalfData['+item.index+'].realName'}" th:required="${item.checked}" th:disabled="${item.checked?'false':'disabled'}" th:style="${item.checked?'':'background:grey;'}" class="layui-input"/>
+                                            </td>
+                                            <td>
+                                                <input type="text" th:name="${'allBatchBehalfData['+item.index+'].bankName'}" th:required="${item.checked}" th:disabled="${item.checked?'false':'disabled'}" th:style="${item.checked?'':'background:grey;'}" class="layui-input"/>
+                                            </td>
+                                            <td><input type="text" th:name="${'allBatchBehalfData['+item.index+'].bankNo'}" th:required="${item.checked}" th:disabled="${item.checked?'false':'disabled'}" th:style="${item.checked?'':'background:grey;'}"  class="layui-input"/>
+                                            </td>
+                                            <td><input type="text" th:name="${'allBatchBehalfData['+item.index+'].bankBranch'}"  th:style="${item.checked?'':'background:grey;'}" class="layui-input"/>
+                                            </td>
+                                            <td><input type="number" th:name="${'allBatchBehalfData['+item.index+'].amount'}" th:required="${item.checked}" th:disabled="${item.checked?'false':'disabled'}" th:style="${item.checked?'':'background:grey;'}" min="0"  step="0.01" class="layui-input"/>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="layui-form-item" style="margin-top:20px;" th:if="${openGoogleAuthenticator}">
+                    <label class="layui-form-label">二次验证:</label>
+                    <div class="layui-input-inline" >
+                        <input type="number" name="fastGoogleAuthenticator" id="fastGoogleAuthenticator" value="" placeholder="请输入谷歌二次验证随机码"  autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">您已开启了谷歌二次验证</div>
+                </div>
+                <div class="layui-form-item" style="margin-top:20px;" th:if="${openPayPassword}">
+                    <label class="layui-form-label">支付密码:</label>
+                    <div class="layui-input-inline" >
+                        <input type="password" name="fastPayPassword" id="fastPayPassword" placeholder="请输入支付密码"  value="" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">您已开启支付密码</div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" id="formSubmit" lay-submit lay-filter="formSubmit">立即提交</button>
+                        <a href="javascript:close();" class="layui-btn layui-btn-primary">关闭</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    layui.use(['layer','form','transfer'], function () {
+        var layer = layui.layer;
+        var form=layui.form;
+        var $=layui.$;
+        var transfer=layui.transfer;
+
+        form.on('checkbox',function(data){
+            var isChecked=data.elem.checked;
+            var index=$(this).parent().parent().attr('data-index');
+            checkb(isChecked,index);
+        });
+
+        form.on("submit(formSubmit)",function(obj){
+            $("#formSubmit").attr({"disabled":"disabled"});
+            $.post('/private/merchantIndex/batchBehalf',obj.field,function(data){
+                layer.alert(data.msg,function(index){
+                   layer.close(index);
+                    if(data.code==1){
+                        parent.location.reload();
+                    }
+                    $("#formSubmit").removeAttr("disabled");
+                });
+
+            });
+            return false;
+        });
+
+        //点击全选, 勾选
+        form.on('checkbox(allChoose)', function (data) {
+            console.log(this.checked);
+            var child = $(".seach-box input[type='checkbox']");
+            child.each(function (index, item) {
+                item.checked = data.elem.checked;
+                index++;
+                checkb(data.elem.checked,index);
+
+            });
+            form.render('checkbox');
+        });
+
+        function checkb(che,index) {
+            if(che){
+                $("input[name='allBatchBehalfData["+index+"].realName']").css("background","white");
+                $("input[name='allBatchBehalfData["+index+"].realName']").attr("disabled",false);
+                $("input[name='allBatchBehalfData["+index+"].realName']").attr('required','true');
+                $("input[name='allBatchBehalfData["+index+"].bankName']").css("background","white");
+                $("input[name='allBatchBehalfData["+index+"].bankName']").attr("disabled",false);
+                $("input[name='allBatchBehalfData["+index+"].bankName']").attr('required','true');
+                $("input[name='allBatchBehalfData["+index+"].bankNo']").css("background","white");
+                $("input[name='allBatchBehalfData["+index+"].bankNo']").attr("disabled",false);
+                $("input[name='allBatchBehalfData["+index+"].bankNo']").attr('required','true');
+                $("input[name='allBatchBehalfData["+index+"].bankBranch']").css("background","white");
+                $("input[name='allBatchBehalfData["+index+"].bankBranch']").attr("disabled",false);
+                $("input[name='allBatchBehalfData["+index+"].bankBranch']").attr('required','true');
+                $("input[name='allBatchBehalfData["+index+"].amount']").css("background","white");
+                $("input[name='allBatchBehalfData["+index+"].amount']").attr("disabled",false);
+                $("input[name='allBatchBehalfData["+index+"].amount']").attr('required','true');
+            }else{
+                $("input[name='allBatchBehalfData["+index+"].realName']").css("background","grey");
+                $("input[name='allBatchBehalfData["+index+"].realName']").attr("disabled","disabled");
+                $("input[name='allBatchBehalfData["+index+"].realName']").removeAttr('required');
+                $("input[name='allBatchBehalfData["+index+"].bankName']").css("background","grey");
+                $("input[name='allBatchBehalfData["+index+"].bankName']").attr("disabled","disabled");
+                $("input[name='allBatchBehalfData["+index+"].bankName']").removeAttr('required');
+                $("input[name='allBatchBehalfData["+index+"].bankNo']").css("background","grey");
+                $("input[name='allBatchBehalfData["+index+"].bankNo']").attr("disabled","disabled");
+                $("input[name='allBatchBehalfData["+index+"].bankNo']").removeAttr('required');
+                $("input[name='allBatchBehalfData["+index+"].bankBranch']").css("background","grey");
+                $("input[name='allBatchBehalfData["+index+"].bankBranch']").attr("disabled","disabled");
+                $("input[name='allBatchBehalfData["+index+"].bankBranch']").removeAttr('required');
+                $("input[name='allBatchBehalfData["+index+"].amount']").css("background","grey");
+                $("input[name='allBatchBehalfData["+index+"].amount']").attr("disabled","disabled");
+                $("input[name='allBatchBehalfData["+index+"].amount']").removeAttr('required');
+            }
+        }
+
+    });
+    function close(){
+        var index = parent.layer.getFrameIndex(window.name);
+        parent.layer.close(index);
+    }
+
+
+</script>
+</body>
+<div th:replace="commons/footer" ></div>
