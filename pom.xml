@@ -124,13 +124,29 @@
 		
   </dependencies>
 
-	<!--配置远程仓库-->
+	<!--配置远程仓库 解决maven下载依赖很慢的问题-->
 	<repositories>
 		<repository>
-			<id>nexus-aliyun</id>
-			<name>Nexus aliyun</name>
-			<!--阿里的远程仓库-->
-			<url>http://maven.aliyun.com/nexus/content/groups/public</url>
+			<id>jboss-public-repository-group</id>
+			<name>JBoss Public Repository Group</name>
+			<url>https://repository.jboss.org/nexus/content/groups/public</url>
 		</repository>
+
+		<repository>
+			<id>public</id>
+			<url>https://maven.aliyun.com/repository/public</url>
+		</repository>
+
+		<repository>
+			<id>central</id>
+			<url>https://maven.aliyun.com/repository/central</url>
+		</repository>
+
+		<repository>
+			<id>alimaven</id>
+			<name>aliyun maven</name>
+			<url>https://maven.aliyun.com/nexus/content/groups/public/</url>
+		</repository>
+
 	</repositories>
 </project>
